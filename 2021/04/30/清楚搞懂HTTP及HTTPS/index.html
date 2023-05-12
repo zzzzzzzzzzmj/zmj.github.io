@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#eeb8c3">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#eeb8c3">
+  <meta name="baidu-site-verification" content="code-wvYwrV1HmI">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://unpkg.com/@fortawesome/fontawesome-free@5.15.3/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/animate.css@3.1.1/animate.min.css">
+
+<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;zzLab.tech&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Gemini&quot;,&quot;version&quot;:&quot;8.3.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:true,&quot;bookmark&quot;:{&quot;enable&quot;:true,&quot;color&quot;:&quot;#FFAFB7&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;buttons&quot;,&quot;active&quot;:&quot;gitalk&quot;,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null,&quot;activeClass&quot;:&quot;gitalk&quot;},&quot;motion&quot;:{&quot;enable&quot;:true,&quot;async&quot;:true,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;},&quot;path&quot;:&quot;&#x2F;search.xml&quot;,&quot;localsearch&quot;:{&quot;enable&quot;:true,&quot;trigger&quot;:&quot;auto&quot;,&quot;top_n_per_article&quot;:1,&quot;unescape&quot;:false,&quot;preload&quot;:false}}</script>
+<meta name="description" content="本文主要讲解关于HTTP的常见的五类面试题：HTTP基本概念、GET和POST、HTTP特性、HTTP与HTTPS 以及 HTTP&#x2F;1.1-HTTP&#x2F;2-HTTP&#x2F;3的演变。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="清楚搞懂HTTP及HTTPS">
+<meta property="og:url" content="https://zzzzzzzzzzmj.github.io/zmj.github.io/2021/04/30/%E6%B8%85%E6%A5%9A%E6%90%9E%E6%87%82HTTP%E5%8F%8AHTTPS/index.html">
+<meta property="og:site_name" content="小周研究所">
+<meta property="og:description" content="本文主要讲解关于HTTP的常见的五类面试题：HTTP基本概念、GET和POST、HTTP特性、HTTP与HTTPS 以及 HTTP&#x2F;1.1-HTTP&#x2F;2-HTTP&#x2F;3的演变。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://pic1.zhimg.com/80/v2-48c1f7bf308e903a02d0b515c74b537c_720w.jpg">
+<meta property="og:image" content="https://pic3.zhimg.com/80/v2-8cf1cb40afdfb17fb9709bb0198dc4c6_720w.jpg">
+<meta property="og:image" content="https://pic1.zhimg.com/80/v2-40c7fb8149b85d97729bfb2e146621b0_720w.jpg">
+<meta property="og:image" content="https://pic1.zhimg.com/80/v2-e0849c0af3fddbed53ff886ae7f2c8b8_720w.jpg">
+<meta property="og:image" content="https://pic2.zhimg.com/80/v2-b0b4fcb0906df46a117fc8fffb60c0e9_720w.jpg">
+<meta property="og:image" content="https://pic1.zhimg.com/80/v2-712d7ba52f0a80495cdbe297066644c8_720w.jpg">
+<meta property="og:image" content="https://pic4.zhimg.com/80/v2-813ae6d5358fe1e1b2c2a6758f11b8d3_720w.jpg">
+<meta property="og:image" content="https://pic2.zhimg.com/80/v2-916676ba8aa7b6dfd74e8b5de5e685d1_720w.jpg">
+<meta property="og:image" content="https://pic2.zhimg.com/80/v2-82a77bd8ff9e9c721e1bc1adb278dee1_720w.jpg">
+<meta property="og:image" content="https://pic3.zhimg.com/80/v2-77e366acf08daca941ddd70db1ac9c16_720w.jpg">
+<meta property="og:image" content="https://pic2.zhimg.com/80/v2-b1c5349e477bc22d3fcf406bd61d1049_720w.jpg">
+<meta property="og:image" content="https://pic1.zhimg.com/80/v2-03185562b3a89319e2f75038a12173b0_720w.jpg">
+<meta property="og:image" content="https://pic1.zhimg.com/80/v2-72d2e6ba44dab6c230a7b18593f450d8_720w.jpg">
+<meta property="og:image" content="https://pic1.zhimg.com/80/v2-288eaab730c978b42b594464823bf324_720w.jpg">
+<meta property="og:image" content="https://img-blog.csdn.net/20170106103925777?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvamlhbmdfeGlueGluZw==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta property="og:image" content="https://img-blog.csdn.net/20170106104000590?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvamlhbmdfeGlueGluZw==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center">
+<meta property="og:image" content="https://img-blog.csdn.net/20180729161320594?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTE1ODM5Mjc=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70">
+<meta property="og:image" content="https://pic1.zhimg.com/80/v2-912258bf11d51c016e97fe472c5fe828_720w.jpg">
+<meta property="og:image" content="https://pic3.zhimg.com/80/v2-2df632acad2860e7c23d6c5edc2bb352_720w.jpg">
+<meta property="og:image" content="https://pic1.zhimg.com/80/v2-0d9d34d1a916a84e8780dd76e5654ee0_720w.jpg">
+<meta property="og:image" content="https://pic4.zhimg.com/80/v2-c4a1ea4b9ac0045921360e11f68e6837_720w.jpg">
+<meta property="og:image" content="https://pic1.zhimg.com/80/v2-5357c49879dbe5bf970b23c5b11a0ca4_720w.jpg">
+<meta property="og:image" content="https://pic4.zhimg.com/80/v2-e76adbd5dca9e3ade94f14b486692083_720w.jpg">
+<meta property="og:image" content="https://pic3.zhimg.com/80/v2-101684b75f3337579c4dd88e9f169a7a_720w.jpg">
+<meta property="article:published_time" content="2021-04-30T07:58:34.000Z">
+<meta property="article:modified_time" content="2021-12-02T15:22:27.231Z">
+<meta property="article:author" content="小周">
+<meta property="article:tag" content="面试">
+<meta property="article:tag" content="搬运">
+<meta property="article:tag" content="计算机网络">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://pic1.zhimg.com/80/v2-48c1f7bf308e903a02d0b515c74b537c_720w.jpg">
+
+
+<link rel="canonical" href="https://zzzzzzzzzzmj.github.io/zmj.github.io/2021/04/30/%E6%B8%85%E6%A5%9A%E6%90%9E%E6%87%82HTTP%E5%8F%8AHTTPS/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;http:&#x2F;&#x2F;zzLab.tech&#x2F;2021&#x2F;04&#x2F;30&#x2F;%E6%B8%85%E6%A5%9A%E6%90%9E%E6%87%82HTTP%E5%8F%8AHTTPS&#x2F;&quot;,&quot;path&quot;:&quot;2021&#x2F;04&#x2F;30&#x2F;清楚搞懂HTTP及HTTPS&#x2F;&quot;,&quot;title&quot;:&quot;清楚搞懂HTTP及HTTPS&quot;}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<title>清楚搞懂HTTP及HTTPS | 小周研究所</title><script src="/js/config.js"></script>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?e5d9d728fe85990111d542575e01e3ab"></script>
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">小周研究所</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">zzLab</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-works"><a href="/works/" rel="section"><i class="fa fa-trophy fa-fw"></i>作品</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-sitemap"><a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8F%90%E7%BA%B2"><span class="nav-text">提纲</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#HTTP%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-text">HTTP基本概念</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F%E6%8F%8F%E8%BF%B0%E4%B8%80%E4%B8%8B"><span class="nav-text">HTTP是什么？描述一下</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%A6%E7%BB%86%E8%A7%A3%E9%87%8A%E2%80%9C%E8%B6%85%E6%96%87%E6%9C%AC%E4%BC%A0%E8%BE%93%E5%8D%8F%E8%AE%AE%E2%80%9D%EF%BC%9F"><span class="nav-text">详细解释“超文本传输协议”？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%8F%E8%AE%AE"><span class="nav-text">协议</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BC%A0%E8%BE%93"><span class="nav-text">传输</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B6%85%E6%96%87%E6%9C%AC"><span class="nav-text">超文本</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%93%E8%AE%BA"><span class="nav-text">结论</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E2%80%9CHTTP-%E6%98%AF%E7%94%A8%E4%BA%8E%E4%BB%8E%E4%BA%92%E8%81%94%E7%BD%91%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%BC%A0%E8%BE%93%E8%B6%85%E6%96%87%E6%9C%AC%E5%88%B0%E6%9C%AC%E5%9C%B0%E6%B5%8F%E8%A7%88%E5%99%A8%E7%9A%84%E5%8D%8F%E8%AE%AEHTTP%E2%80%9D-%EF%BC%8C%E8%BF%99%E7%A7%8D%E8%AF%B4%E6%B3%95%E6%AD%A3%E7%A1%AE%E5%90%97%EF%BC%9F"><span class="nav-text">“HTTP 是用于从互联网服务器传输超文本到本地浏览器的协议HTTP” ，这种说法正确吗？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E2%80%9CHTTP%E5%B8%B8%E8%A7%81%E7%9A%84%E7%8A%B6%E6%80%81%E7%A0%81%E2%80%9D%E6%9C%89%E5%93%AA%E4%BA%9B%EF%BC%9F"><span class="nav-text">“HTTP常见的状态码”有哪些？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1xx"><span class="nav-text">1xx</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2xx"><span class="nav-text">2xx</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3xx"><span class="nav-text">3xx</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4xx"><span class="nav-text">4xx</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5xx"><span class="nav-text">5xx</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP%E5%B8%B8%E8%A7%81%E5%AD%97%E6%AE%B5%E6%9C%89%E5%93%AA%E4%BA%9B%EF%BC%9F"><span class="nav-text">HTTP常见字段有哪些？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Host-%E5%AD%97%E6%AE%B5"><span class="nav-text">Host 字段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Content-Length-%E5%AD%97%E6%AE%B5"><span class="nav-text">Content-Length 字段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Connection-%E5%AD%97%E6%AE%B5"><span class="nav-text">Connection 字段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Content-Type-%E5%AD%97%E6%AE%B5"><span class="nav-text">Content-Type 字段</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Content-Encoding-%E5%AD%97%E6%AE%B5"><span class="nav-text">Content-Encoding 字段</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#GET-%E4%B8%8E-POST"><span class="nav-text">GET 与 POST</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AF%B4%E4%B8%80%E4%B8%8BGET%E5%92%8CPOST%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="nav-text">说一下GET和POST的区别？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#GET%E6%96%B9%E6%B3%95"><span class="nav-text">GET方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#POST%E6%96%B9%E6%B3%95"><span class="nav-text">POST方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#GET%E4%B8%8EPOST%E5%AF%B9%E6%AF%94"><span class="nav-text">GET与POST对比</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#GET%E5%92%8CPOST%E6%96%B9%E6%B3%95%E9%83%BD%E6%98%AF%E5%AE%89%E5%85%A8%E5%92%8C%E5%B9%82%E7%AD%89%E7%9A%84%E5%90%97%EF%BC%9F"><span class="nav-text">GET和POST方法都是安全和幂等的吗？</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#HTTP%E7%89%B9%E6%80%A7"><span class="nav-text">HTTP特性</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP-1-1%E7%9A%84%E4%BC%98%E7%82%B9%E6%9C%89%E5%93%AA%E4%BA%9B%EF%BC%8C%E5%A6%82%E4%BD%95%E4%BD%93%E7%8E%B0%EF%BC%9F"><span class="nav-text">HTTP&#x2F;1.1的优点有哪些，如何体现？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E7%AE%80%E5%8D%95"><span class="nav-text">1. 简单</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%81%B5%E6%B4%BB%E5%92%8C%E6%98%93%E4%BA%8E%E6%89%A9%E5%B1%95"><span class="nav-text">2. 灵活和易于扩展</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%BA%94%E7%94%A8%E5%B9%BF%E6%B3%9B%E5%92%8C%E8%B7%A8%E5%B9%B3%E5%8F%B0"><span class="nav-text">3. 应用广泛和跨平台</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP%E7%9A%84%E7%BC%BA%E7%82%B9%EF%BC%9F"><span class="nav-text">HTTP的缺点？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%97%A0%E7%8A%B6%E6%80%81"><span class="nav-text">1. 无状态</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A5%BD%E5%A4%84"><span class="nav-text">好处</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9D%8F%E5%A4%84"><span class="nav-text">坏处</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%98%8E%E6%96%87%E4%BC%A0%E8%BE%93"><span class="nav-text">2. 明文传输</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%A5%BD%E5%A4%84-v2"><span class="nav-text">好处</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9D%8F%E5%A4%84-v2"><span class="nav-text">坏处</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E4%B8%8D%E5%AE%89%E5%85%A8"><span class="nav-text">3. 不安全</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP-1-1%E7%9A%84%E6%80%A7%E8%83%BD%E5%A6%82%E4%BD%95%EF%BC%9F"><span class="nav-text">HTTP&#x2F;1.1的性能如何？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E9%95%BF%E8%BF%9E%E6%8E%A5-%E6%8C%81%E4%B9%85%E8%BF%9E%E6%8E%A5-%F0%9F%91%8D"><span class="nav-text">1. 长连接 &#x2F; 持久连接 👍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%AE%A1%E9%81%93%E7%BD%91%E7%BB%9C%E4%BC%A0%E8%BE%93-%F0%9F%91%8D"><span class="nav-text">2. 管道网络传输 👍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E9%98%9F%E5%A4%B4%E9%98%BB%E5%A1%9E-%F0%9F%91%8E"><span class="nav-text">3. 队头阻塞 👎</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#HTTP-%E4%B8%8E-HTTPS"><span class="nav-text">HTTP 与 HTTPS</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP-%E4%B8%8E-HTTPS-%E6%9C%89%E5%93%AA%E4%BA%9B%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="nav-text">HTTP 与 HTTPS 有哪些区别？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP%E8%A7%A3%E5%86%B3%E4%BA%86HTTPS%E7%9A%84%E5%93%AA%E4%BA%9B%E9%97%AE%E9%A2%98%EF%BC%9F"><span class="nav-text">HTTP解决了HTTPS的哪些问题？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTPS%E6%98%AF%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3%E4%B8%8A%E9%9D%A2%E4%B8%89%E7%A7%8D%E9%A3%8E%E9%99%A9%E7%9A%84%EF%BC%9F"><span class="nav-text">HTTPS是如何解决上面三种风险的？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%B7%E5%90%88%E5%8A%A0%E5%AF%86"><span class="nav-text">混合加密</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%91%98%E8%A6%81%E7%AE%97%E6%B3%95%EF%BC%88Hash%E7%AE%97%E6%B3%95%EF%BC%89"><span class="nav-text">摘要算法（Hash算法）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E5%AD%97%E8%AF%81%E4%B9%A6"><span class="nav-text">数字证书</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTPS%E6%98%AF%E5%A6%82%E4%BD%95%E5%BB%BA%E7%AB%8B%E7%9A%84%EF%BC%8C%E5%85%B6%E9%97%B4%E4%BA%A4%E4%BA%92%E4%BA%86%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="nav-text">HTTPS是如何建立的，其间交互了什么？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-ClientHello"><span class="nav-text">1. ClientHello</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-ServerHello"><span class="nav-text">2. ServerHello</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%93%8D%E5%BA%94"><span class="nav-text">3. 客户端响应</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%9A%84%E6%9C%80%E5%90%8E%E5%93%8D%E5%BA%94"><span class="nav-text">4. 服务器的最后响应</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#HTTP-1-1%E3%80%81Http-2%E3%80%81HTTP-3%E6%BC%94%E5%8F%98"><span class="nav-text">HTTP&#x2F;1.1、Http&#x2F;2、HTTP&#x2F;3演变</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8EHTTP-1-0%E7%9B%B8%E6%AF%94%EF%BC%8CHTTP-1-1%E6%8F%90%E5%8D%87%E4%BA%86%E4%BB%80%E4%B9%88%E6%80%A7%E8%83%BD%EF%BC%9F"><span class="nav-text">与HTTP&#x2F;1.0相比，HTTP&#x2F;1.1提升了什么性能？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%B9%E6%8D%AEHTTP-1-1%E7%9A%84%E6%80%A7%E8%83%BD%E7%93%B6%E9%A2%88%EF%BC%8CHTTP-2%E5%81%9A%E4%BA%86%E5%93%AA%E4%BA%9B%E4%BC%98%E5%8C%96%EF%BC%9F"><span class="nav-text">根据HTTP&#x2F;1.1的性能瓶颈，HTTP&#x2F;2做了哪些优化？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%A4%B4%E9%83%A8%E5%8E%8B%E7%BC%A9"><span class="nav-text">1. 头部压缩</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E4%BA%8C%E7%BA%A7%E5%88%B6%E6%A0%BC%E5%BC%8F"><span class="nav-text">2. 二级制格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%95%B0%E6%8D%AE%E6%B5%81"><span class="nav-text">3. 数据流</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8"><span class="nav-text">4. 多路复用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E6%9C%8D%E5%8A%A1%E5%99%A8%E6%8E%A8%E9%80%81"><span class="nav-text">5. 服务器推送</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HTTP-2%E6%9C%89%E5%93%AA%E4%BA%9B%E7%BC%BA%E9%99%B7%EF%BC%8CHTTP-3%E5%81%9A%E4%BA%86%E5%93%AA%E4%BA%9B%E4%BC%98%E5%8C%96%EF%BC%9F"><span class="nav-text">HTTP&#x2F;2有哪些缺陷，HTTP&#x2F;3做了哪些优化？</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="nav-text">参考文献</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <a href="/about/">
+    <img class="site-author-image" itemprop="image" alt="小周"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">小周</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">26</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zzzzzzzzzzmj" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zzzzzzzzzzmj" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:2514071662@qq.com" title="E-Mail → mailto:2514071662@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/zmj251407" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;zmj251407" rel="noopener" target="_blank"><i class="fab fa-codiepie fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zzzzzzzzzzmj.github.io/zmj.github.io/2021/04/30/%E6%B8%85%E6%A5%9A%E6%90%9E%E6%87%82HTTP%E5%8F%8AHTTPS/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="小周">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小周研究所">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          清楚搞懂HTTP及HTTPS
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+
+  
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-04-30 15:58:34" itemprop="dateCreated datePublished" datetime="2021-04-30T15:58:34+08:00">2021-04-30</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-12-02 23:22:27" itemprop="dateModified" datetime="2021-12-02T23:22:27+08:00">2021-12-02</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index"><span itemprop="name">计算机网络</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>9k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>8 分钟</span>
+    </span>
+</div>
+
+            <div class="post-description">本文主要讲解关于HTTP的常见的五类面试题：HTTP基本概念、GET和POST、HTTP特性、HTTP与HTTPS 以及 HTTP/1.1-HTTP/2-HTTP/3的演变。</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="提纲"><a class="header-anchor" href="#提纲"> </a>提纲</h1>
+<p><img src="https://pic1.zhimg.com/80/v2-48c1f7bf308e903a02d0b515c74b537c_720w.jpg" alt="HTTP五类面试题"></p>
+<h1 id="HTTP基本概念"><a class="header-anchor" href="#HTTP基本概念"> </a>HTTP基本概念</h1>
+<h2 id="HTTP是什么？描述一下"><a class="header-anchor" href="#HTTP是什么？描述一下"> </a>HTTP是什么？描述一下</h2>
+<p>HTTP（HyperText Transfer Protocol）是超文本传输协议</p>
+<h2 id="详细解释“超文本传输协议”？"><a class="header-anchor" href="#详细解释“超文本传输协议”？"> </a>详细解释“超文本传输协议”？</h2>
+<p><strong>超文本传输协议</strong>可以拆成三个部分：超文本、传输、协议。</p>
+<p><img src="https://pic3.zhimg.com/80/v2-8cf1cb40afdfb17fb9709bb0198dc4c6_720w.jpg" alt="三个部分"></p>
+<h3 id="协议"><a class="header-anchor" href="#协议"> </a>协议</h3>
+<p>HTTP是一个用在计算机世界里的协议。</p>
+<p>它使用计算机能够理解的语言，确立了一种<strong>计算机之间交流通信的规范</strong>（两个以上的参与者——协），以及相关的<strong>各种控制和错误处理方式</strong>（行为约定和规范——议）。</p>
+<h3 id="传输"><a class="header-anchor" href="#传输"> </a>传输</h3>
+<p>HTTP协议是一个双向协议，是一个在计算机世界里专门用来<strong>在两点之间传输数据的约定和规范</strong>。数据虽然在两点之间传输，但允许中间有中转或接力。中间人需要遵从HTTP协议，只要不打扰基本的数据传输，就可以添加任意<code>额外的东西</code>。</p>
+<h3 id="超文本"><a class="header-anchor" href="#超文本"> </a>超文本</h3>
+<blockquote>
+<p>超文本就是超越了普通文本（字符文字、图片、视频、压缩包等）的文本，它是文字、图片、视频等的混合体，最关键是有超链接，能从一个超文本跳转到另一个超文本。</p>
+</blockquote>
+<blockquote>
+<p>HTML就是最常见的超文本，它本身只是纯文字文件，但内部用很多标签定义了图片、视频等链接。经过浏览器的解释，呈现出一个有文字、有画面的网页。</p>
+</blockquote>
+<p>HTTP传输的内容是超文本。</p>
+<h3 id="结论"><a class="header-anchor" href="#结论"> </a>结论</h3>
+<p><strong>HTTP是一个在计算机世界里专门在<code>两点</code>之间<code>传输</code>文字、图片、音频、视频等<code>超文本</code>数据的<code>约定和规范</code>。</strong></p>
+<h2 id="“HTTP-是用于从互联网服务器传输超文本到本地浏览器的协议HTTP”-，这种说法正确吗？"><a class="header-anchor" href="#“HTTP-是用于从互联网服务器传输超文本到本地浏览器的协议HTTP”-，这种说法正确吗？"> </a>“HTTP 是用于从互联网服务器传输超文本到本地浏览器的协议HTTP” ，这种说法正确吗？</h2>
+<p>不正确，因为也可以是<code>服务器到服务器</code>，所以采用两点之间的描述更准确。</p>
+<h2 id="“HTTP常见的状态码”有哪些？"><a class="header-anchor" href="#“HTTP常见的状态码”有哪些？"> </a>“HTTP常见的状态码”有哪些？</h2>
+<h3 id="1xx"><a class="header-anchor" href="#1xx"> </a>1xx</h3>
+<p>1xx类状态码属于<code>提示信息</code>，是协议处理中的一种中间状态，实际用到的比较少。</p>
+<h3 id="2xx"><a class="header-anchor" href="#2xx"> </a>2xx</h3>
+<p>2xx类状态码表示服务器<code>成功</code>处理了客户端的请求。</p>
+<p><code>200 OK</code>是最常见的成功状态码，表示一切正常。如果是非HEAD请求，服务器返回的响应头都会有body数据。</p>
+<p><code>202 Accepted</code>表示服务器已经收到请求消息，但尚未进行处理，用于将请求由另一个进程或服务器进行处理，或是对请求进行批处理的情形。</p>
+<p><code>204 No Content</code>也是最常见的状态码，与200 OK基本相同，但响应头没有body数据。</p>
+<p><code>206 Partial Content</code>是应用于HTTP分块下载或断电续传，表示响应返回的body数据并不是资源的全部，而是其中一部分，也是服务器的处理成功状态。</p>
+<h3 id="3xx"><a class="header-anchor" href="#3xx"> </a>3xx</h3>
+<p>3xx类代码表示客户端请求的资源发送了变动，需要客户端用新的URL重新发送请求获取资源，也就是<code>重定向</code>。</p>
+<p><code>301 Moved Permanently</code>表示永久重定向，说明请求的资源已经不存在了，需要改用新的URL再次访问。</p>
+<p><code>302 Found</code>表示临时重定向，说明请求的资源还在，但暂时需要用另一个URL来访问。</p>
+<p>301和302都会在响应头里使用字段<code>Location</code>，指明后续要跳转的URL，浏览器会自动重定向新的URL。</p>
+<p><code>304 Not Modified</code>不具有跳转含义，表示资源未修改，重定向已存在的缓冲缓冲，也称缓存重定向，用于缓存控制。</p>
+<h3 id="4xx"><a class="header-anchor" href="#4xx"> </a>4xx</h3>
+<p>4xx状态码表示客户端发送的报文有误，服务器无法处理，是错误码。</p>
+<p><code>400 Bad Request</code>表示客户端请求的报文有错误，但只是个笼统的错误。</p>
+<p><code>403 Forbidden</code>表示服务器禁止访问资源，并不是客户端的请求出错。</p>
+<p><code>404 Not Found</code>表示请求的资源在服务器上不存在或未找到，所以无法提供给客户端。</p>
+<h3 id="5xx"><a class="header-anchor" href="#5xx"> </a>5xx</h3>
+<p>5xx类状态码表示客户端请求报文正确，但<code>服务器处理时内部发生了错误</code>，属于服务器端的错误码。</p>
+<p><code>500 Internal Server Error</code>与400类似，时格笼统通用的错误码，服务器发生了什么错误，我们并不知道。</p>
+<p><code>501 Not Implemented</code>表示客户端请求的功能还不支持，类似“即将开业，敬请期待”的意思。</p>
+<p><code>502 Bad Gateway</code>通常是服务器作为网关或代理时返回的错误码，表示服务器自身工作正常，访问后端服务器发生了错误。</p>
+<p><code>503 Service Unavailable</code>表示服务器当前很忙，暂时无法响应服务器，类似“网络服务正忙，请稍后重试”的意思。</p>
+<h2 id="HTTP常见字段有哪些？"><a class="header-anchor" href="#HTTP常见字段有哪些？"> </a>HTTP常见字段有哪些？</h2>
+<h3 id="Host-字段"><a class="header-anchor" href="#Host-字段"> </a>Host 字段</h3>
+<p>客户端发送请求时，用来指定服务器的域名。</p>
+<p>有了Host字段，就可以将请求发往<code>同一台</code>服务器上的不同网站。</p>
+<p><code>Host: www.A.com</code></p>
+<p><img src="https://pic1.zhimg.com/80/v2-40c7fb8149b85d97729bfb2e146621b0_720w.jpg" alt="Host"></p>
+<h3 id="Content-Length-字段"><a class="header-anchor" href="#Content-Length-字段"> </a>Content-Length 字段</h3>
+<p>服务器在返回数据时，会有Content-Length字段，表明本次响应的数据长度。</p>
+<p><code>Content-Length: 1000</code></p>
+<p><img src="https://pic1.zhimg.com/80/v2-e0849c0af3fddbed53ff886ae7f2c8b8_720w.jpg" alt="Content-Lenth"></p>
+<p>上图是告诉浏览器，本次服务器响应的数据长度是1000个字节，后面的字节就是下一个响应了。</p>
+<h3 id="Connection-字段"><a class="header-anchor" href="#Connection-字段"> </a>Connection 字段</h3>
+<p>Connection字段最常用于客户端要求服务器使用TCP持久连接，以便其他请求复用。</p>
+<p>HTTP/1.1版本的默认连接都是持久连接，但为了兼容老版本的HTTP，需要指定Connection首部字段的值为<code>Keep-Alive</code>。</p>
+<p><code>Connection: keep-alive</code></p>
+<p>这样，一个可复用的TCP连接就建立了，直到客户端或服务器主动关闭连接。但这不是标准字段。</p>
+<p><img src="https://pic2.zhimg.com/80/v2-b0b4fcb0906df46a117fc8fffb60c0e9_720w.jpg" alt="Connection"></p>
+<h3 id="Content-Type-字段"><a class="header-anchor" href="#Content-Type-字段"> </a>Content-Type 字段</h3>
+<p>Content-Type字段用于服务器响应时，告诉客户端，本次数据是什么什么格式。</p>
+<p><code>Content-Type: text/html; charset=utf-8</code></p>
+<p>上面的类型表明，发送的是网页，编码是UTF-8。</p>
+<p>客户端请求时，可以使用<code>Accept</code>字段声明自己可以接受哪种数据格式。</p>
+<p><code>Accept: */*</code></p>
+<p>上面的类型声明中，客户端声明自己可以接受任何格式的数据。</p>
+<p><img src="https://pic1.zhimg.com/80/v2-712d7ba52f0a80495cdbe297066644c8_720w.jpg" alt="Accept &amp; Content-Type"></p>
+<h3 id="Content-Encoding-字段"><a class="header-anchor" href="#Content-Encoding-字段"> </a>Content-Encoding 字段</h3>
+<p>Content-Encoding字段说明数据的压缩方法，表示服务器返回的数据使用了什么压缩格式。</p>
+<p><code>Content-Encoding: gzip</code></p>
+<p>上面的类型声明表示，服务器返回的数据采用了gzip方式压缩，告知客户端需要用此方法解压。</p>
+<p>客户端在请求时，用<code>Accept-Encoding</code>字段说明自己可以接受哪些压缩格式。</p>
+<p><code>Accept-Encoding: gzip, deflate</code></p>
+<p><img src="https://pic4.zhimg.com/80/v2-813ae6d5358fe1e1b2c2a6758f11b8d3_720w.jpg" alt="Accept-Encoding &amp; Content-Encoding"></p>
+<h1 id="GET-与-POST"><a class="header-anchor" href="#GET-与-POST"> </a>GET 与 POST</h1>
+<h2 id="说一下GET和POST的区别？"><a class="header-anchor" href="#说一下GET和POST的区别？"> </a>说一下GET和POST的区别？</h2>
+<h3 id="GET方法"><a class="header-anchor" href="#GET方法"> </a>GET方法</h3>
+<p><strong>Get方法</strong>的含义是请求<code>从服务器获取资源</code>，这个资源可以是静态的文本、页面、图片视频等。</p>
+<p><em>比如，你打开我的文章，浏览器就会发送 GET请求给服务器，服务器就会返回文章的所有文字及资源。</em></p>
+<p><img src="https://pic2.zhimg.com/80/v2-916676ba8aa7b6dfd74e8b5de5e685d1_720w.jpg" alt="GET请求"></p>
+<h3 id="POST方法"><a class="header-anchor" href="#POST方法"> </a>POST方法</h3>
+<p><strong>POST方法</strong>是反向操作，向<code>URI</code>指定的资源提交数据，数据就放在报文的body里。</p>
+<blockquote>
+<p>URI，统一资源标志符（Uniform Resource Identifier），表示的是web上每一种可用的资源，如 HTML文档、图像、视频片段、程序等都由一个URI进行标识的。</p>
+<p>URL，统一资源定位符（Uniform Resource Locator）是URI的一个子集。</p>
+</blockquote>
+<p><em>比如，你在我文章底部，敲入了留言后点击“提交”，浏览器就会执行一次 POST 请求，把你的留言文字放进了报文 body 里，然后拼接好 POST 请求头，通过 TCP 协议发送给服务器。</em></p>
+<p><img src="https://pic2.zhimg.com/80/v2-82a77bd8ff9e9c721e1bc1adb278dee1_720w.jpg" alt="POST请求"></p>
+<h3 id="GET与POST对比"><a class="header-anchor" href="#GET与POST对比"> </a>GET与POST对比</h3>
+<ul>
+<li>POST更安全（不会作为url的一部分，不会被缓存、保存在服务器日志、以及浏览器浏览记录和书签中）</li>
+<li>POST发送的数据更大（GET有url长度限制）</li>
+<li>POST能发送更多的数据类型和编码方式（GET只能发送ASCII字符进行url编码）</li>
+<li>GET参数通过URL传递，POST放在Request body中</li>
+<li>GET在浏览器回退时是无害的，而POST会再次提交请求</li>
+<li>POST用于修改和写入数据，GET一般用于搜索排序和筛选之类的操作</li>
+<li>POST比GET慢</li>
+</ul>
+<h2 id="GET和POST方法都是安全和幂等的吗？"><a class="header-anchor" href="#GET和POST方法都是安全和幂等的吗？"> </a>GET和POST方法都是安全和幂等的吗？</h2>
+<blockquote>
+<p>“安全”“幂等”的概念：</p>
+<p>在HTTP协议里，所谓的“安全”是指请求方法不会“破坏”服务器上的资源。</p>
+<p>所谓的“幂等”，意思是多次执行相同的操作，结果都是“相同”的。</p>
+</blockquote>
+<p>很明显，<strong>GET方法就是安全且幂等的</strong>，因为它是<code>只读</code>操作，无论操作多少次，服务器上的数据都是安全的，且每次的结果都是相同的的</p>
+<p><strong>POST</strong>因为是<code>新增或提交数据</code>的操作，会修改服务器上的资源，所以是<strong>不安全的</strong>，且多次提交数据就会创建多个资源，所以是<strong>不幂等的</strong>。</p>
+<h1 id="HTTP特性"><a class="header-anchor" href="#HTTP特性"> </a>HTTP特性</h1>
+<h2 id="HTTP-1-1的优点有哪些，如何体现？"><a class="header-anchor" href="#HTTP-1-1的优点有哪些，如何体现？"> </a>HTTP/1.1的优点有哪些，如何体现？</h2>
+<p>HTTP最突出的优点是<code>简单</code>、<code>灵活和易于扩展</code>、<code>应用广泛和跨平台</code>。</p>
+<h3 id="1-简单"><a class="header-anchor" href="#1-简单"> </a>1. 简单</h3>
+<p>HTTP基本的报文格式是<code>header + body</code>，头部信息是<code>key-value</code>简单文本形式，<code>易于理解</code>，降低了学习和使用门槛。</p>
+<h3 id="2-灵活和易于扩展"><a class="header-anchor" href="#2-灵活和易于扩展"> </a>2. 灵活和易于扩展</h3>
+<p>HTTP协议里的各类请求方法、URI/URL、状态码、头字段等每个组成要求都没有被固定死，<code>都允许开发人员自定义和扩充</code>。</p>
+<p>同时HTTP由于是工作在应用层（OSI第七层），则它的<code>下层可以随意变化</code>。</p>
+<p>HTTPS也就是在HTTP与TCP层之间增加了<code>SSL/TLS安全传输层</code>，HTTP/3甚至把TCPP（就是TCP/IP）层换成了UDP的QUIC。</p>
+<h3 id="3-应用广泛和跨平台"><a class="header-anchor" href="#3-应用广泛和跨平台"> </a>3. 应用广泛和跨平台</h3>
+<p>HTTP的应用范围非常<code>广泛</code>，从台式机的浏览器到手机上的各种app，同时天然具有<code>跨平台</code>的优越性</p>
+<h2 id="HTTP的缺点？"><a class="header-anchor" href="#HTTP的缺点？"> </a>HTTP的缺点？</h2>
+<p>HTTP协议里有<code>优缺点一体</code>的双刃剑，分别是<code>无状态</code>、<code>明文传输</code>，同时还有一大缺点<code>不安全</code>。</p>
+<h3 id="1-无状态"><a class="header-anchor" href="#1-无状态"> </a>1. 无状态</h3>
+<h4 id="好处"><a class="header-anchor" href="#好处"> </a>好处</h4>
+<p>因为服务器不会记忆HTTP的状态，所以不需要额外的资源来记录状态信息。因此减轻了服务器的负担，能够把更多的CPU和内容用来对外提供服务。</p>
+<h4 id="坏处"><a class="header-anchor" href="#坏处"> </a>坏处</h4>
+<p>既然服务器没有记忆能力，它在完成有关联性的操作的时候会非常麻烦。</p>
+<p><em>例如，登录 ➡️ 添加购物车 ➡️ 下单 ➡️  结算 ➡️ 支付，这系列操作都要知道用户的身份才行。但服务器不知道这些请求是有关联的，所以每次都要问一遍身份信息。</em></p>
+<p>对于上述的无状态问题，解决方案有很多种，其中比较简单的方式是使用<strong>Cookie技术</strong>。（还有<code>通过Session保存状态信息</code> ）</p>
+<p><code>Cookie</code>通过在请求和响应报文中，写入Cookie信息来控制客户端的状态。相当于，在客户端第一次请求后，服务器会下发一个装有客户信息的<code>小贴纸</code>，后续客户端请求服务器时，带上小贴纸，服务器就能认得了。</p>
+<p><img src="https://pic3.zhimg.com/80/v2-77e366acf08daca941ddd70db1ac9c16_720w.jpg" alt="Cookie"></p>
+<h3 id="2-明文传输"><a class="header-anchor" href="#2-明文传输"> </a>2. 明文传输</h3>
+<h4 id="好处-v2"><a class="header-anchor" href="#好处-v2"> </a>好处</h4>
+<p>明文意味着，在传输过程中的信息是可<code>方便阅读</code>的。<em>通过浏览器的F12控制台或Wireshark抓包都可以直接肉眼查看，为调试工作带来了极大的便利。</em></p>
+<h4 id="坏处-v2"><a class="header-anchor" href="#坏处-v2"> </a>坏处</h4>
+<p>明文也意味着，HTTP的所有信息都暴露在光天化日之下，在漫长的传输过程中，信息的内容毫无隐私可言，很<code>容易被窃取</code>。</p>
+<h3 id="3-不安全"><a class="header-anchor" href="#3-不安全"> </a>3. 不安全</h3>
+<ul>
+<li>通信使用明文（不加密），内容有可能被窃听*（账号信息泄露）*</li>
+<li>不验证通信方的身份，有可能遭遇伪装*（访问假的淘宝）*</li>
+<li>无法证明报文的完整性，内容有可能被篡改*（植入垃圾广告）*</li>
+</ul>
+<p>HTTP的安全，可以用<code>HTTPS</code>的方式解决，也就是通过引入SSL/TLS层，使得在安全上达到了极致。</p>
+<h2 id="HTTP-1-1的性能如何？"><a class="header-anchor" href="#HTTP-1-1的性能如何？"> </a>HTTP/1.1的性能如何？</h2>
+<p>HTTP协议是<code>基于TCP/IP连接</code>的，并且使用<code>请求-应答的通信方式</code>，所以性能的关键体现在这两点：</p>
+<h3 id="1-长连接-持久连接-👍"><a class="header-anchor" href="#1-长连接-持久连接-👍"> </a>1. 长连接 / 持久连接 👍</h3>
+<p>早期HTTP/1.0的性能有一个很大的问题：每发起一个请求，都要新建一次TCP连接（三次握手），而且是串行请求，做了无谓的TCP连接建立和断开，增加了通信开销。</p>
+<p>为了解决上述TCP连接问题，HTTP/1.1提出了<code>长连接</code>通信方式，也叫<code>持久连接</code>。这种方式的<strong>好处</strong>在于减少了TCP连接的重复建立和断开造成的额外开销，减轻了服务器端的负载。</p>
+<p>持久连接的<strong>特点</strong>是，只要任意一端没有明确提出断开连接，则保持TCP连接状态。</p>
+<p><img src="https://pic2.zhimg.com/80/v2-b1c5349e477bc22d3fcf406bd61d1049_720w.jpg" alt="短连接与长连接"></p>
+<h3 id="2-管道网络传输-👍"><a class="header-anchor" href="#2-管道网络传输-👍"> </a>2. 管道网络传输 👍</h3>
+<p>HTTP/1.1采用了长连接的方式，这使得<code>管道(pipeline)网络传输</code>成为了可能。即，可在同一个TCP连中，客户端可以发起多个请求，只要第一个请求发出去了，不必再等其回来，就可以发第二个请求出去。这样可以<code>减少整体的响应时间</code>。</p>
+<p><em>例如，客户端需要请求两个资源。以前的做法是，在同一个TCP连接里，先发送A请求，然后等待服务器做出响应，收到后，再发送B请求。<strong>管道机制则是允许浏览器同时发出A请求和B请求。</strong></em></p>
+<p><img src="https://pic1.zhimg.com/80/v2-03185562b3a89319e2f75038a12173b0_720w.jpg" alt="管道网络传输"></p>
+<p>然而，服务器还是<code>按照顺序</code>，先响应A请求，完成后再响应B请求。要是前面的响应特别慢，后面就会有许多请求排队等着，这就是<code>队头阻塞</code>。</p>
+<h3 id="3-队头阻塞-👎"><a class="header-anchor" href="#3-队头阻塞-👎"> </a>3. 队头阻塞 👎</h3>
+<p>“请求 - 应答”的模式加剧了HTTP的性能问题。</p>
+<p>因为，当顺序发送的请求序列中的一个请求因为某种原因被阻塞时，在后面排队的所有请求也一同被阻塞了。这样会招致客户端一直请求不到数据，也就是<code>队头阻塞</code>。</p>
+<p><img src="https://pic1.zhimg.com/80/v2-72d2e6ba44dab6c230a7b18593f450d8_720w.jpg" alt="队头阻塞"></p>
+<h3 id="总结"><a class="header-anchor" href="#总结"> </a>总结</h3>
+<p>总之，HTTP/1.1的性能一般般，后续的HTTP/2和HTTP/3就是在优化HTTP的性能。</p>
+<h1 id="HTTP-与-HTTPS"><a class="header-anchor" href="#HTTP-与-HTTPS"> </a>HTTP 与 HTTPS</h1>
+<h2 id="HTTP-与-HTTPS-有哪些区别？"><a class="header-anchor" href="#HTTP-与-HTTPS-有哪些区别？"> </a>HTTP 与 HTTPS 有哪些区别？</h2>
+<ul>
+<li>HTTP时超文本传输协议，信息是明文传输，存在安全风险。HTTPS解决了HTTP不安全的问题，在TCP和HTTP网络层之间加入了SSL/TLS安全协议，使得报文能够加密传输。</li>
+<li>HTTP连接建立相对简单，TCP三次握手之后便可以进行HTTP的报文传输。而HTTPS在TCP三次握手之后，还需要进行SSL/TLS的握手过程，才可以进入加密报文传输。</li>
+<li>HTTP的端口号是80；HTTPS的端口号是443。</li>
+<li>HTTPS协议需要向CA(证书权威机构)申请数字证书，来保证服务器的身份是可信的。</li>
+</ul>
+<h2 id="HTTP解决了HTTPS的哪些问题？"><a class="header-anchor" href="#HTTP解决了HTTPS的哪些问题？"> </a>HTTP解决了HTTPS的哪些问题？</h2>
+<p>HTTP由于是明文传输，所以在安全上存在以下三个风险：</p>
+<ul>
+<li><code>窃听风险</code>，比如在通信链路上可以获取通信内容</li>
+<li><code>篡改风险</code>，比如强制植入垃圾广告</li>
+<li><code>冒充风险</code>，比如冒充淘宝网站</li>
+</ul>
+<p>HTTPS在HTTP与TCP层加入了<code>SSL/TLS协议</code>。</p>
+<p><img src="https://pic1.zhimg.com/80/v2-288eaab730c978b42b594464823bf324_720w.jpg" alt="HTTP与HTTPS"></p>
+<p>可以很好的解决上述的风险：</p>
+<ul>
+<li><code>信息加密</code>：交互信息无法被窃取</li>
+<li><code>校验机制</code>：无法篡改通信内容，篡改了就不能正常显示</li>
+<li><code>身份证书</code>：证明淘宝是真的淘宝网</li>
+</ul>
+<p>可见，只要自身不作“恶”，SSL/TLS协议是能保证通信安全的。</p>
+<h2 id="HTTPS是如何解决上面三种风险的？"><a class="header-anchor" href="#HTTPS是如何解决上面三种风险的？"> </a>HTTPS是如何解决上面三种风险的？</h2>
+<ul>
+<li><code>混合加密</code>的方式实现信息的<strong>机密性</strong>，解决了被窃听的风险</li>
+<li><code>摘要算法</code>的方式实现<strong>完整性</strong>，它能够为数据生成独一无二的“指纹”，指纹用于校验数据的完整性，解决了被篡改的风险</li>
+<li>将服务器公钥放入<code>数字证书</code>中，解决了被冒充的风险</li>
+</ul>
+<h3 id="混合加密"><a class="header-anchor" href="#混合加密"> </a>混合加密</h3>
+<p>HTTPS采用<code>非对称加密 + 对称加密</code>的<code>混合加密</code>方式：</p>
+<ul>
+<li>在通信建立前采用<code>非对称加密</code>的方式<code>交换会话密钥</code>，后续就不再使用非对称加密</li>
+<li>在通信过程中，全部使用<code>对称加密的会话密钥</code>的方式加密明文数据</li>
+</ul>
+<p><img src="https://img-blog.csdn.net/20170106103925777?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvamlhbmdfeGlueGluZw==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt="加密过程"></p>
+<p><img src="https://img-blog.csdn.net/20170106104000590?watermark/2/text/aHR0cDovL2Jsb2cuY3Nkbi5uZXQvamlhbmdfeGlueGluZw==/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70/gravity/Center" alt="解密过程"></p>
+<p>采用混合加密方式的原因：</p>
+<ul>
+<li><code>对称加密</code>只用一个密钥，运行速度快，密钥必须保密，无法做到安全的密钥交换。常用方法DES、3DES、Blowfish、IDEA、RC4、RC5、RC6 和 AES。</li>
+<li><code>非对称加密</code>使用两个密钥：公钥和私钥，公钥可以任意分发，私钥保密，解决了密钥交换问题，但速度慢**（接受报文的一方生成公钥和私钥，私钥自己保留，公钥对外公布）**常用方法：RSA、ECC（移动设备用）、Diffie-Hellman、El Gamal、DSA（数字签名用）。</li>
+</ul>
+<p><img src="https://img-blog.csdn.net/20180729161320594?watermark/2/text/aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3UwMTE1ODM5Mjc=/font/5a6L5L2T/fontsize/400/fill/I0JBQkFCMA==/dissolve/70" alt="非对称加密"></p>
+<h3 id="摘要算法（Hash算法）"><a class="header-anchor" href="#摘要算法（Hash算法）"> </a>摘要算法（Hash算法）</h3>
+<p>客户端在发送明文之前，会通过摘要算法算出明文的“指纹”，发送的时候把<code>指纹 + 明文</code>一同加密成密文，发送给客户端。客户端解密后，用相同的摘要算法算出发送过来的明文。通过比较客户端携带的“指纹”和算出来的“指纹”作比较，若“指纹”相同，说明数据是完整的。</p>
+<p>常用方法：MD2、MD4、MD5、HAVAL、SHA。</p>
+<h3 id="数字证书"><a class="header-anchor" href="#数字证书"> </a>数字证书</h3>
+<p>背景：客户端先向服务器端索要公钥，然后用公钥加密信息，服务器收到密文后，用自己的私钥解决。那么问题来了，如何保证公钥不被冒充，具有信任度呢？</p>
+<p>借助第三方权威机构<code>CA（数字证书认证机构）</code>，将<code>服务器公钥放在数字证书</code>（由CA颁发）中，只要证书是可信的，公钥就是可信的。</p>
+<p><img src="https://pic1.zhimg.com/80/v2-912258bf11d51c016e97fe472c5fe828_720w.jpg" alt="数字证书工作流程"></p>
+<p>对于<code>数字签名</code>，这里有一篇通俗易懂的<a target="_blank" rel="noopener" href="http://www.ruanyifeng.com/blog/2011/08/what_is_a_digital_signature.html">好文章</a>！</p>
+<h2 id="HTTPS是如何建立的，其间交互了什么？"><a class="header-anchor" href="#HTTPS是如何建立的，其间交互了什么？"> </a>HTTPS是如何建立的，其间交互了什么？</h2>
+<p>SSL/TLS协议基本流程：</p>
+<ul>
+<li>客户端向服务器索要并验证服务器的公钥</li>
+<li>双方协商生产<code>会话密钥</code></li>
+<li>双方采用会话密钥进行加密通信</li>
+</ul>
+<p><strong>前两步叫<code>握手阶段</code>。</strong></p>
+<p>SSL/TLS的<code>握手阶段</code>涉及<code>四次通信</code>，如下图：</p>
+<p><img src="https://pic3.zhimg.com/80/v2-2df632acad2860e7c23d6c5edc2bb352_720w.jpg" alt="HTTPS建立过程"></p>
+<p>SSL/TLS协议建立的详细流程：</p>
+<h3 id="1-ClientHello"><a class="header-anchor" href="#1-ClientHello"> </a>1. ClientHello</h3>
+<p>首先，由客户端向服务器发起加密通信请求，也就是<code>ClientHello</code>请求。</p>
+<p>在这一步，客户端主要向服务器发送以下信息：</p>
+<ol>
+<li>客户端支持的<code>SSL/TLS协议版本</code>，如TLS1.2版本</li>
+<li>客户端生产的随机数<code>Client Random</code>，后面用于生产会话密钥</li>
+<li>客户端支持的<code>密码套件列表</code>，如RSA加密算法</li>
+</ol>
+<h3 id="2-ServerHello"><a class="header-anchor" href="#2-ServerHello"> </a>2. ServerHello</h3>
+<p>服务器收到客户端请求后，向客户端发出响应，也就是<code>ServerHello</code>。</p>
+<p>服务器响应的内容如下：</p>
+<ol>
+<li><code>确认</code>SSL/TLS协议版本，如果浏览器不支持，则关闭加密通信</li>
+<li>服务器产生的随机数<code>Server Random</code>，后面用于生产会话密钥</li>
+<li>确认的<code>密码套件列表</code>，如RSA加密算法</li>
+<li>服务器的<code>数字证书</code></li>
+</ol>
+<h3 id="3-客户端响应"><a class="header-anchor" href="#3-客户端响应"> </a>3. 客户端响应</h3>
+<p>客户端收到服务器的响应之后，首先通过浏览器或操作系统中的CA公钥，确认服务器的数字证书的真实性。</p>
+<p>如果证书没有问题，客户端会从数字证书中取出服务器的公钥，然后使用它加密报文，向服务器发送如下信息：</p>
+<ol>
+<li>一个随机数<code>pre-master key</code>，该随机数会被服务器公钥加密（是握手阶段的第三个随机数）</li>
+<li>加密通信算法改变通知，表示最后的信息都将用<code>会话密钥</code>加密通信</li>
+<li>客户端握手结束通知，表示客户端的握手阶段已经结束。这一项的同时，把之前所有内容发生的数据做个摘要，用来供服务端校验</li>
+</ol>
+<p>接着就用双方协商的加密算法，<code>各自生成</code>本次通信的会话密钥。</p>
+<h3 id="4-服务器的最后响应"><a class="header-anchor" href="#4-服务器的最后响应"> </a>4. 服务器的最后响应</h3>
+<p>服务器收到客户端的第三个随机数<code>pre-master key</code>之后，通过协商的加密算法，计算出本次通信的会话密钥。然后向客户端发送最后的信息：</p>
+<ol>
+<li>加密通信算法改变通知，表示随后的信息都将用<code>会话密钥</code>加密通信</li>
+<li>服务器握手结束通知，表示服务器的握手阶段已经结束。这一项的同时把之前所有内容发生的数据做个摘要，用来供客户端校验</li>
+</ol>
+<p>至此，整个SSL/TLS的握手阶段全部结束</p>
+<p>接下来，客户端与服务器进入加密通信，就完全使用普通的HTTP协议，只不过用<code>会话密钥</code>加密内容。</p>
+<h1 id="HTTP-1-1、Http-2、HTTP-3演变"><a class="header-anchor" href="#HTTP-1-1、Http-2、HTTP-3演变"> </a>HTTP/1.1、Http/2、HTTP/3演变</h1>
+<h2 id="与HTTP-1-0相比，HTTP-1-1提升了什么性能？"><a class="header-anchor" href="#与HTTP-1-0相比，HTTP-1-1提升了什么性能？"> </a>与HTTP/1.0相比，HTTP/1.1提升了什么性能？</h2>
+<p>与HTTP/1.0相比，HTTP/1.1性能上的改进：</p>
+<ul>
+<li>使用TCP长连接的方式，改善了HTTP/1.0短连接造成的性能开销</li>
+<li>支持管道网络传输，只要第一个请求发出去了，不必等其回来，就可以发送第二个请求，减少了整体的响应时间</li>
+</ul>
+<p>但HTTP/1.1还是有性能瓶颈：</p>
+<ul>
+<li><code>请求/响应头部(Header)未经压缩就发送</code>，首部信息越多，延迟越大。只能压缩<code>Body</code>的部分</li>
+<li><code>发送冗长的首部</code>，每次互相发送相同的首部造成的浪费较多</li>
+<li>服务器是按请求的顺序响应的，如果服务器响应慢，会招致客户端一直请求不到数据，也就是<code>队头阻塞</code></li>
+<li><code>没有请求优先级控制</code></li>
+<li>请求只能从客户端开始，<code>服务器只能被动响应</code></li>
+</ul>
+<h2 id="根据HTTP-1-1的性能瓶颈，HTTP-2做了哪些优化？"><a class="header-anchor" href="#根据HTTP-1-1的性能瓶颈，HTTP-2做了哪些优化？"> </a>根据HTTP/1.1的性能瓶颈，HTTP/2做了哪些优化？</h2>
+<p>HTTP/2协议是<code>基于HTTPS</code>的，所以HTTP/2的安全性是有保障的。</p>
+<p>与HTTP/1.1相比，HTTP/2性能上的改进：</p>
+<h3 id="1-头部压缩"><a class="header-anchor" href="#1-头部压缩"> </a>1. 头部压缩</h3>
+<p>HTTP/2会<code>压缩头</code>，如果同时发出多个请求，它们的头是一样的或是相似的，那么协议会帮你<code>消除重复的部分</code>。</p>
+<p>这就是所谓的<code>HPack</code>算法：在客户端和服务器同时维护一张头信息表，所有字段都会存入这个表，生成一个索引号，这样就提高了速度。</p>
+<h3 id="2-二级制格式"><a class="header-anchor" href="#2-二级制格式"> </a>2. 二级制格式</h3>
+<p>HTTP/2不再用像HTTP/1.1里的纯文本形式的报文，而是全面采用了<code>二进制格式</code>。</p>
+<p>头信息和数据体都是二进制，并且统称为<code>帧(frame)</code>：<code>头信息帧</code>和<code>数据帧</code>。</p>
+<p><img src="https://pic1.zhimg.com/80/v2-0d9d34d1a916a84e8780dd76e5654ee0_720w.jpg" alt="报文区别"></p>
+<p>这样虽然对人不友好，但是对计算机非常友好，因为计算机只懂二进制，收到报文后，无需再将明文的报文转成二进制，而是直接解析二进制报文，这增加了<code>数据传输的效率</code>。</p>
+<h3 id="3-数据流"><a class="header-anchor" href="#3-数据流"> </a>3. 数据流</h3>
+<p>HTTP/2的数据包不是按顺序发送的，同一个连接里面连续的数据包，可能属于不同的响应。因此，必须要对数据包做标记，指明它属于哪个响应。</p>
+<p>每个请求或响应的所有数据包，称为一个<code>数据流(Stream)</code>。</p>
+<p>每个数据流标记着一个独一无二的编号，其中规定客户端发出的数据流编号为奇数，服务器发出的数据流编号为偶数。</p>
+<p>客户端还可以<code>指定数据流的优先级</code>。优先级高的请求，服务器就会先响应。</p>
+<h3 id="4-多路复用"><a class="header-anchor" href="#4-多路复用"> </a>4. 多路复用</h3>
+<p>HTTP/2可以<code>在一个连接中，并发多个请求或响应</code>，而不用按顺序意义对应。</p>
+<p>移除了HTTP/1.1中的串行请求，不需要排队等待，也就不会出现队头阻塞的问题，<code>降低了延迟，大幅度提高了连接的利用率</code>。</p>
+<p><em>举例来说，在TCP连接里，服务器收到了客户端A和B的两个请求，如果发现A处理过程非常耗时，于是就响应A请求已经处理好的部分，接着响应B请求，完成后，再响应A请求剩下的部分</em>。</p>
+<p><img src="https://pic4.zhimg.com/80/v2-c4a1ea4b9ac0045921360e11f68e6837_720w.jpg" alt="多路复用"></p>
+<h3 id="5-服务器推送"><a class="header-anchor" href="#5-服务器推送"> </a>5. 服务器推送</h3>
+<p>HTTP/2还在一定程度上改善了传统的 请求 - 应答 工作模式，服务不再是被动地响应，也<code>可以主动</code>向客户端发送消息。</p>
+<p><em>举例来说，在浏览器刚请求HTML的时候，就提前把可能会用到的JS、CSS文件等静态资源主动发给客户端，<code>降低延时的等待</code>，也就是<code>服务器推送(Server Push/Cache Push)</code>。</em></p>
+<p><img src="https://pic1.zhimg.com/80/v2-5357c49879dbe5bf970b23c5b11a0ca4_720w.jpg" alt="HTTP/1 - HTTP/2"></p>
+<h2 id="HTTP-2有哪些缺陷，HTTP-3做了哪些优化？"><a class="header-anchor" href="#HTTP-2有哪些缺陷，HTTP-3做了哪些优化？"> </a>HTTP/2有哪些缺陷，HTTP/3做了哪些优化？</h2>
+<p>HTTP2主要的<strong>问题</strong>在于：多个HTTP请求复用一个TCP连接，下层的TCP协议是不知道有多少个HTTP请求的。所以一旦发生<code>丢包</code>现象，就会<code>触发TCP的重传机制</code>，这样在一个TCP连接中的<code>所有HTTP请求，都必须等待</code>这个丢了的包被重传回来。</p>
+<p>也就是说：</p>
+<ul>
+<li>HTTP/1.1中的管道传输中，如果有一个请求阻塞了，那么队列后的请求也统统被阻塞</li>
+<li>HTTP/2多请求服复用一个TCP连接，一旦发生丢包，就会阻塞住所有的HTTP请求</li>
+</ul>
+<p>这都是基于TCP传输层的问题，所以<code>HTTP/3把HTTP下层的TCP协议改成了UDP</code>！</p>
+<p><img src="https://pic4.zhimg.com/80/v2-e76adbd5dca9e3ade94f14b486692083_720w.jpg" alt="HTTP/1 - HTTP/3"></p>
+<p>UDP发生时不管顺序的，也不管丢包的，所以不会出现上述问题。</p>
+<p>但UDP时不可靠传输，而<code>基于UDP的QUIC协议，可以实现类似TCP的可靠性传输</code>。</p>
+<ul>
+<li><code>QUIC</code>有一套自己的机制可以保证传输的可靠性。当某个流发生丢包时，只会阻塞这个流，<code>其他流不会受到影响</code></li>
+<li>TLS升级成了最新的<code>1.3版本</code></li>
+<li>头部压缩算法升级为<code>QPack</code></li>
+<li>HTTPS要建立一个连接，要花费6次交互。先是建立3次握手，然后是TLS/1.3的3次握手。而QUIC直接把以往的TCP和TLS/1.3的6次交互，<code>合并成了3次，减少了交互次数</code>
+<ul>
+<li>是的，TLS/1.3由TLS/1.2的4次握手变成了3次，<a target="_blank" rel="noopener" href="https://blog.csdn.net/zk3326312/article/details/80245756">详解</a></li>
+</ul>
+</li>
+</ul>
+<p><img src="https://pic3.zhimg.com/80/v2-101684b75f3337579c4dd88e9f169a7a_720w.jpg" alt="TCP-HTTPS和QUIC-HTTP"></p>
+<p>因此，QUIC是一个基于UDP的<code>伪</code>TCP + TLS + HTTP/2的多路复用协议。</p>
+<p>QUIC是新协议，对于很多网络设备，根本不知道什么是QUIC，只会当作UDP，这样就出现了新的问题。所以HTTP/3现在的普及进度非常缓慢，不知道未来UDP能否逆袭TCP。</p>
+<h1 id="参考文献"><a class="header-anchor" href="#参考文献"> </a>参考文献</h1>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzUxODAzNDg4NQ==&amp;mid=2247483971&amp;idx=1&amp;sn=8f2d5dae3d95efc446061b352c8e9961&amp;chksm=f98e46e9cef9cfff1f6bee1974b8dc27dcc42f0627dcf8ff0c0df8dbaa7a1f74587e3fafc167&amp;scene=178&amp;cur_album_id=1337204681134751744#rd">硬核！30张图解HTTP常见的面试题 - 小林coding</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>给作者倒一杯 Java |ૂ•ᴗ•⸝⸝)</div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.jpg" alt="小周 微信">
+        <span>微信</span>
+      </div>
+
+  </div>
+</div>
+
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>小周
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://zzzzzzzzzzmj.github.io/zmj.github.io/2021/04/30/%E6%B8%85%E6%A5%9A%E6%90%9E%E6%87%82HTTP%E5%8F%8AHTTPS/" title="清楚搞懂HTTP及HTTPS">https://zzzzzzzzzzmj.github.io/zmj.github.io/2021/04/30/清楚搞懂HTTP及HTTPS/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E9%9D%A2%E8%AF%95/" rel="tag"># 面试</a>
+              <a href="/tags/%E6%90%AC%E8%BF%90/" rel="tag"># 搬运</a>
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag"># 计算机网络</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/04/22/Vue%E5%93%8D%E5%BA%94%E5%BC%8F%E5%8E%9F%E7%90%86/" rel="prev" title="Vue响应式原理">
+                  <i class="fa fa-chevron-left"></i> Vue响应式原理
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/05/07/%E7%AE%97%E6%B3%95%E9%A2%98/" rel="next" title="算法题">
+                  算法题 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div><script src="/js/comments.js"></script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian">
+  </div>
+
+<div class="copyright">
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fas fa-carrot"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小周</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+      <span>站点总字数：</span>
+    <span title="站点总字数">259k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span>站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">3:55</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://unpkg.com/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script>
+
+  
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{&quot;enable&quot;:true,&quot;tags&quot;:&quot;none&quot;,&quot;js&quot;:&quot;https:&#x2F;&#x2F;unpkg.com&#x2F;mathjax@3.1.2&#x2F;es5&#x2F;tex-mml-chtml.js&quot;}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://unpkg.com/gitalk@1.7.2/dist/gitalk.css">
+
+<script class="next-config" data-name="gitalk" type="application/json">{&quot;enable&quot;:true,&quot;github_id&quot;:&quot;zzzzzzzzzzmj&quot;,&quot;repo&quot;:&quot;blog-comment&quot;,&quot;client_id&quot;:&quot;fcfb5b509516a117acaa&quot;,&quot;client_secret&quot;:&quot;fed028539de4e797eed5463bac8a25cf52bfeae4&quot;,&quot;admin_user&quot;:&quot;zzzzzzzzzzmj&quot;,&quot;distraction_free_mode&quot;:true,&quot;proxy&quot;:&quot;https:&#x2F;&#x2F;cors-anywhere.azm.workers.dev&#x2F;https:&#x2F;&#x2F;github.com&#x2F;login&#x2F;oauth&#x2F;access_token&quot;,&quot;language&quot;:&quot;zh-CN&quot;,&quot;js&quot;:&quot;https:&#x2F;&#x2F;unpkg.com&#x2F;gitalk@1.7.2&#x2F;dist&#x2F;gitalk.min.js&quot;,&quot;path_md5&quot;:&quot;b279219a9ebab38c8ab91a66a408f0f3&quot;}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#eeb8c3">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#eeb8c3">
+  <meta name="baidu-site-verification" content="code-wvYwrV1HmI">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://unpkg.com/@fortawesome/fontawesome-free@5.15.3/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/animate.css@3.1.1/animate.min.css">
+
+<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;zzLab.tech&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Gemini&quot;,&quot;version&quot;:&quot;8.3.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:true,&quot;bookmark&quot;:{&quot;enable&quot;:true,&quot;color&quot;:&quot;#FFAFB7&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;buttons&quot;,&quot;active&quot;:&quot;gitalk&quot;,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null,&quot;activeClass&quot;:&quot;gitalk&quot;},&quot;motion&quot;:{&quot;enable&quot;:true,&quot;async&quot;:true,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;},&quot;path&quot;:&quot;&#x2F;search.xml&quot;,&quot;localsearch&quot;:{&quot;enable&quot;:true,&quot;trigger&quot;:&quot;auto&quot;,&quot;top_n_per_article&quot;:1,&quot;unescape&quot;:false,&quot;preload&quot;:false}}</script>
+<meta name="description" content="本文主要讲解了Vue响应式原理，包括【何为Vue？】【Vue响应过程】【数据侦测】【收集依赖】【Vue响应式流程图】。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Vue响应式原理">
+<meta property="og:url" content="https://zzzzzzzzzzmj.github.io/zmj.github.io/2021/04/22/Vue%E5%93%8D%E5%BA%94%E5%BC%8F%E5%8E%9F%E7%90%86/index.html">
+<meta property="og:site_name" content="小周研究所">
+<meta property="og:description" content="本文主要讲解了Vue响应式原理，包括【何为Vue？】【Vue响应过程】【数据侦测】【收集依赖】【Vue响应式流程图】。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2020/7/12/17343bec8052a2ff?imageView2/0/w/1280/h/960/format/webp/ignore-error/1">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2020/7/12/17343bec82aa9093?imageView2/0/w/1280/h/960/format/webp/ignore-error/1">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2020/7/12/17343bec8082db69?imageView2/0/w/1280/h/960/format/webp/ignore-error/1">
+<meta property="og:image" content="https://user-gold-cdn.xitu.io/2020/7/12/17343bec82aa9093?imageView2/0/w/1280/h/960/format/webp/ignore-error/1">
+<meta property="article:published_time" content="2021-04-22T07:11:57.000Z">
+<meta property="article:modified_time" content="2021-07-15T08:55:14.000Z">
+<meta property="article:author" content="小周">
+<meta property="article:tag" content="搬运">
+<meta property="article:tag" content="Vue">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://user-gold-cdn.xitu.io/2020/7/12/17343bec8052a2ff?imageView2/0/w/1280/h/960/format/webp/ignore-error/1">
+
+
+<link rel="canonical" href="https://zzzzzzzzzzmj.github.io/zmj.github.io/2021/04/22/Vue%E5%93%8D%E5%BA%94%E5%BC%8F%E5%8E%9F%E7%90%86/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;http:&#x2F;&#x2F;zzLab.tech&#x2F;2021&#x2F;04&#x2F;22&#x2F;Vue%E5%93%8D%E5%BA%94%E5%BC%8F%E5%8E%9F%E7%90%86&#x2F;&quot;,&quot;path&quot;:&quot;2021&#x2F;04&#x2F;22&#x2F;Vue响应式原理&#x2F;&quot;,&quot;title&quot;:&quot;Vue响应式原理&quot;}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<title>Vue响应式原理 | 小周研究所</title><script src="/js/config.js"></script>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?e5d9d728fe85990111d542575e01e3ab"></script>
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">小周研究所</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">zzLab</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-works"><a href="/works/" rel="section"><i class="fa fa-trophy fa-fw"></i>作品</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-sitemap"><a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Vue%E5%93%8D%E5%BA%94%E5%BC%8F%E5%8E%9F%E7%90%86"><span class="nav-text">Vue响应式原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E4%BB%80%E4%B9%88%E6%98%AFVue%E5%93%8D%E5%BA%94"><span class="nav-text">1. 什么是Vue响应</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Vue%E5%93%8D%E5%BA%94%E8%BF%87%E7%A8%8B"><span class="nav-text">2. Vue响应过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E5%A6%82%E4%BD%95%E4%BE%A6%E6%B5%8B%E6%95%B0%E6%8D%AE%E5%8F%98%E5%8C%96"><span class="nav-text">3. 如何侦测数据变化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-Object-defineProperty-%E5%AE%9E%E7%8E%B0"><span class="nav-text">3.1. Object.defineProperty 实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%F0%9F%93%8C-%E6%88%91%E7%9A%84%E4%BB%A3%E7%A0%81"><span class="nav-text">📌 我的代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-Proxy%E5%AE%9E%E7%8E%B0"><span class="nav-text">3.2.  Proxy实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E6%94%B6%E9%9B%86%E4%BE%9D%E8%B5%96"><span class="nav-text">4. 收集依赖</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#4-1-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E6%94%B6%E9%9B%86%E4%BE%9D%E8%B5%96"><span class="nav-text">4.1. 为什么要收集依赖</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-2-%E5%A6%82%E4%BD%95%E6%94%B6%E9%9B%86%E4%BE%9D%E8%B5%96"><span class="nav-text">4.2. 如何收集依赖</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-1-%E8%AE%A2%E9%98%85%E8%80%85Dep"><span class="nav-text">4.2.1 订阅者Dep</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-2-%E8%A7%82%E5%AF%9F%E8%80%85-Watcher"><span class="nav-text">4.2.2. 观察者 Watcher</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-3-%E4%BE%9D%E8%B5%96%E7%9A%84%E6%9C%AC%E8%B4%A8"><span class="nav-text">4.3 依赖的本质</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-4-%E5%A6%82%E4%BD%95%E6%94%B6%E9%9B%86%E4%BE%9D%E8%B5%96"><span class="nav-text">4.4 如何收集依赖</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E6%B5%81%E7%A8%8B%E5%9B%BE"><span class="nav-text">5. 流程图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-text">参考资料</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <a href="/about/">
+    <img class="site-author-image" itemprop="image" alt="小周"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">小周</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">26</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zzzzzzzzzzmj" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zzzzzzzzzzmj" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:2514071662@qq.com" title="E-Mail → mailto:2514071662@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/zmj251407" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;zmj251407" rel="noopener" target="_blank"><i class="fab fa-codiepie fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zzzzzzzzzzmj.github.io/zmj.github.io/2021/04/22/Vue%E5%93%8D%E5%BA%94%E5%BC%8F%E5%8E%9F%E7%90%86/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="小周">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小周研究所">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Vue响应式原理
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+
+  
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-04-22 15:11:57" itemprop="dateCreated datePublished" datetime="2021-04-22T15:11:57+08:00">2021-04-22</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-07-15 16:55:14" itemprop="dateModified" datetime="2021-07-15T16:55:14+08:00">2021-07-15</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Vue/" itemprop="url" rel="index"><span itemprop="name">Vue</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>5.3k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>5 分钟</span>
+    </span>
+</div>
+
+            <div class="post-description">本文主要讲解了Vue响应式原理，包括【何为Vue？】【Vue响应过程】【数据侦测】【收集依赖】【Vue响应式流程图】。</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="Vue响应式原理"><a class="header-anchor" href="#Vue响应式原理"> </a>Vue响应式原理</h1>
+<h2 id="1-什么是Vue响应"><a class="header-anchor" href="#1-什么是Vue响应"> </a>1. 什么是Vue响应</h2>
+<blockquote>
+<p>数据发生变化后，会重新对页面渲染，这就是Vue响应式</p>
+</blockquote>
+<img src="https://user-gold-cdn.xitu.io/2020/7/12/17343bec8052a2ff?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt="响应式图例" style="zoom:67%;">
+<p><img src="https://user-gold-cdn.xitu.io/2020/7/12/17343bec82aa9093?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt="流程图"></p>
+<h2 id="2-Vue响应过程"><a class="header-anchor" href="#2-Vue响应过程"> </a>2. Vue响应过程</h2>
+<ul>
+<li><strong>数据劫持 / 数据代理</strong>：侦测数据的变化</li>
+<li><strong>依赖收集</strong>：收集视图依赖了哪些数据</li>
+<li><strong>发布订阅者模式</strong>：数据变化时，自动“通知”需要更新的试图部分，并进行更新</li>
+</ul>
+<h2 id="3-如何侦测数据变化"><a class="header-anchor" href="#3-如何侦测数据变化"> </a>3. 如何侦测数据变化</h2>
+<p>两种方法：</p>
+<ul>
+<li><strong>Object.defineProperty</strong>：数据劫持</li>
+<li>ES6的<strong>Proxy</strong>：数据代理</li>
+</ul>
+<h3 id="3-1-Object-defineProperty-实现"><a class="header-anchor" href="#3-1-Object-defineProperty-实现"> </a>3.1. Object.defineProperty 实现</h3>
+<p>Vue通过设定对象属性的 <code>setter/getter</code> 方法来监听数据的变化：</p>
+<ul>
+<li><code>getter</code>收集依赖</li>
+<li>每个<code>setter</code>方法都是一个<code>观察者</code>，在<code>数据变更</code>时，通知<code>订阅者</code>更新视图</li>
+</ul>
+<p>代码如下：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java">function render <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+<span class="token comment">//set的时候会走这里，重新渲染</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'模拟视图渲染'</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+let data <span class="token operator">=</span> <span class="token punctuation">{</span>
+  name<span class="token operator">:</span> <span class="token string">'zzLab'</span><span class="token punctuation">,</span>
+  location<span class="token operator">:</span> <span class="token punctuation">{</span> x<span class="token operator">:</span> <span class="token number">100</span><span class="token punctuation">,</span> y<span class="token operator">:</span> <span class="token number">100</span> <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+<span class="token function">observe</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>定义核心函数 <code>observe</code></p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">observe</span> <span class="token punctuation">(</span><span class="token parameter">obj</span><span class="token punctuation">)</span> <span class="token punctuation">{</span> <span class="token comment">// 我们来用它使对象变成可观察的</span>
+  <span class="token comment">// 判断类型</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>obj <span class="token operator">||</span> <span class="token keyword">typeof</span> obj <span class="token operator">!==</span> <span class="token string">'object'</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span>
+  <span class="token punctuation">}</span>
+  Object<span class="token punctuation">.</span><span class="token function">keys</span><span class="token punctuation">(</span>obj<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token parameter">key</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    <span class="token function">defineReactive</span><span class="token punctuation">(</span>obj<span class="token punctuation">,</span> key<span class="token punctuation">,</span> obj<span class="token punctuation">[</span>key<span class="token punctuation">]</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+  <span class="token keyword">function</span> <span class="token function">defineReactive</span> <span class="token punctuation">(</span><span class="token parameter">obj<span class="token punctuation">,</span> key<span class="token punctuation">,</span> value</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// 递归子属性</span>
+    <span class="token function">observe</span><span class="token punctuation">(</span>value<span class="token punctuation">)</span>
+    Object<span class="token punctuation">.</span><span class="token function">defineProperty</span><span class="token punctuation">(</span>obj<span class="token punctuation">,</span> key<span class="token punctuation">,</span> <span class="token punctuation">{</span>
+      enumerable<span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span> <span class="token comment">//可枚举（可以遍历）</span>
+      configurable<span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span> <span class="token comment">//可配置（比如可以删除）</span>
+      <span class="token function-variable function">get</span><span class="token operator">:</span> <span class="token keyword">function</span> <span class="token function">reactiveGetter</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'get'</span><span class="token punctuation">,</span> value<span class="token punctuation">)</span> <span class="token comment">// 监听</span>
+        <span class="token keyword">return</span> value
+      <span class="token punctuation">}</span><span class="token punctuation">,</span>
+      <span class="token function-variable function">set</span><span class="token operator">:</span> <span class="token keyword">function</span> <span class="token function">reactiveSetter</span> <span class="token punctuation">(</span><span class="token parameter">newVal</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token function">observe</span><span class="token punctuation">(</span>newVal<span class="token punctuation">)</span> <span class="token comment">//如果赋值是一个对象，也要递归子属性</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>newVal <span class="token operator">!==</span> value<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+          console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'set'</span><span class="token punctuation">,</span> newVal<span class="token punctuation">)</span> <span class="token comment">// 监听</span>
+          <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+          value <span class="token operator">=</span> newVal
+        <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>改变data的属性，触发set；获取data的属性，触发get。</strong></p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">data<span class="token punctuation">.</span>location <span class="token operator">=</span> <span class="token punctuation">{</span>
+  x<span class="token operator">:</span> <span class="token number">1000</span><span class="token punctuation">,</span>
+  y<span class="token operator">:</span> <span class="token number">1000</span>
+<span class="token punctuation">}</span> <span class="token comment">//打印     set {x: 1000,y: 1000} 模拟视图渲染</span>
+data<span class="token punctuation">.</span>name <span class="token comment">//打印   get zzLab</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p><strong>以上代码的主要作用：</strong></p>
+<p>observe这个函数传入一个 <code>obj（需要被追踪变化的对象）</code>，通过遍历所有属性的方式对该对象的每一个属性都通过 <code>defineReactive</code> 处理，给每个属性加上<code>set</code>和<code>get</code>方法，以此来达到实现侦测对象变化。值得注意的是，observe 会进行递归调用。</p>
+<p><strong>如何侦测Vue中data的数据：</strong></p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">class</span> <span class="token class-name">Vue</span> <span class="token punctuation">{</span>
+    <span class="token comment">/* Vue构造类 */</span>
+    <span class="token function">constructor</span><span class="token punctuation">(</span><span class="token parameter">options</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>_data <span class="token operator">=</span> options<span class="token punctuation">.</span>data<span class="token punctuation">;</span>
+        <span class="token function">observer</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>_data<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>但是！<strong>上面的代码无法检测到对象属性的<code>添加或删除</code>(如data.location.a=1,增加一个a属性)。</strong></p>
+<p>因为 Vue 通过Object.defineProperty来将对象的key转换成getter/setter的形式来追踪变化，但getter/setter只能追踪一个数据<code>是否被修改</code>，无法追踪<code>新增属性和删除</code>属性。</p>
+<ul>
+<li>
+<p>如果要删除属性，可以用<code>vm.$delete</code>实现。</p>
+</li>
+<li>
+<p>如果要新增属性</p>
+<ul>
+<li>可以使用 Vue.set(location, a, 1) 方法向嵌套对象添加响应式属性;</li>
+<li>也可以给这个对象重新赋值，比如data.location = {…data.location,a:1}</li>
+</ul>
+</li>
+</ul>
+<p>另外，Object.defineProperty 不能监听数组的变化，需要进行数组方法的重写</p>
+<h3 id="📌-我的代码"><a class="header-anchor" href="#📌-我的代码"> </a>📌 我的代码</h3>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">// 监听数据变化</span>
+<span class="token keyword">let</span> obj <span class="token operator">=</span> <span class="token punctuation">{</span>
+  name<span class="token operator">:</span> <span class="token string">'Jack'</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+Object<span class="token punctuation">.</span><span class="token function">keys</span><span class="token punctuation">(</span>obj<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token parameter">key</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  <span class="token keyword">let</span> value <span class="token operator">=</span> obj<span class="token punctuation">[</span>key<span class="token punctuation">]</span><span class="token punctuation">;</span>
+  Object<span class="token punctuation">.</span><span class="token function">defineProperty</span><span class="token punctuation">(</span>obj<span class="token punctuation">,</span> key<span class="token punctuation">,</span> <span class="token punctuation">{</span>
+    <span class="token function">set</span><span class="token punctuation">(</span>newVal<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"我监听到了value发生变化"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      value <span class="token operator">=</span> newVal<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    <span class="token function">get</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"我获取到了value"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token keyword">return</span> value<span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="3-2-Proxy实现"><a class="header-anchor" href="#3-2-Proxy实现"> </a>3.2.  Proxy实现</h3>
+<p>Proxy 是 <code>JavaScript 2015</code> 的一个新特性。</p>
+<p>Proxy 的<code>代理</code>是针对<code>整个对象</code>的，而不是对象的某个属性，因此不同于 Object.defineProperty 的必须遍历对象每个属性，<strong>Proxy 只需要做<code>一层代理</code>就可以监听<code>同级结构</code>下的所有属性变化</strong>，当然对于<code>深层结构</code>，递归还是需要进行的。此外Proxy支持代理<code>数组</code>的变化。</p>
+<p>这种方法，代码不仅精简，而且还是实现一套代码对对象和数组的侦测都适用。</p>
+<p>不过Proxy兼容性不太好！</p>
+<p>代码如下：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'模拟视图的更新'</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">let</span> obj <span class="token operator">=</span> <span class="token punctuation">{</span>
+  name<span class="token operator">:</span> <span class="token string">'前端工匠'</span><span class="token punctuation">,</span>
+  age<span class="token operator">:</span> <span class="token punctuation">{</span> age<span class="token operator">:</span> <span class="token number">100</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  arr<span class="token operator">:</span> <span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">]</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">let</span> handler <span class="token operator">=</span> <span class="token punctuation">{</span>
+  <span class="token function">get</span><span class="token punctuation">(</span>target<span class="token punctuation">,</span> key<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// 如果取的值是对象就再对这个对象进行数据劫持</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token keyword">typeof</span> target<span class="token punctuation">[</span>key<span class="token punctuation">]</span> <span class="token operator">==</span> <span class="token string">'object'</span> <span class="token operator">&amp;&amp;</span> target<span class="token punctuation">[</span>key<span class="token punctuation">]</span> <span class="token operator">!==</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">Proxy</span><span class="token punctuation">(</span>target<span class="token punctuation">[</span>key<span class="token punctuation">]</span><span class="token punctuation">,</span> handler<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+    <span class="token keyword">return</span> Reflect<span class="token punctuation">.</span><span class="token function">get</span><span class="token punctuation">(</span>target<span class="token punctuation">,</span> key<span class="token punctuation">)</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token function">set</span><span class="token punctuation">(</span>target<span class="token punctuation">,</span> key<span class="token punctuation">,</span> value<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token comment">//key为length时，表示遍历完了最后一个属性</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>key <span class="token operator">===</span> <span class="token string">'length'</span><span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token boolean">true</span>
+    <span class="token function">render</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span> Reflect<span class="token punctuation">.</span><span class="token function">set</span><span class="token punctuation">(</span>target<span class="token punctuation">,</span> key<span class="token punctuation">,</span> value<span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">let</span> proxy <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Proxy</span><span class="token punctuation">(</span>obj<span class="token punctuation">,</span> handler<span class="token punctuation">)</span>
+proxy<span class="token punctuation">.</span>age<span class="token punctuation">.</span>name <span class="token operator">=</span> <span class="token string">'zzLab'</span> <span class="token comment">// 支持新增属性</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>proxy<span class="token punctuation">.</span>age<span class="token punctuation">.</span>name<span class="token punctuation">)</span> <span class="token comment">// 模拟视图的更新 浪里行舟</span>
+proxy<span class="token punctuation">.</span>arr<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token string">'zzLab'</span> <span class="token comment">//支持数组的内容发生变化</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>proxy<span class="token punctuation">.</span>arr<span class="token punctuation">)</span> <span class="token comment">// 模拟视图的更新 ['zzLab', 2, 3 ]</span>
+proxy<span class="token punctuation">.</span>arr<span class="token punctuation">.</span>length<span class="token operator">--</span> <span class="token comment">// 无效</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="4-收集依赖"><a class="header-anchor" href="#4-收集依赖"> </a>4. 收集依赖</h2>
+<h3 id="4-1-为什么要收集依赖"><a class="header-anchor" href="#4-1-为什么要收集依赖"> </a>4.1. 为什么要收集依赖</h3>
+<blockquote>
+<p>我们之所以要观察数据，其目的在于当数据的属性发生变化时，可以通知那些曾经使用了该数据的地方。比如例子中，模板中使用了location 数据，当它发生变化时，要向使用了它的地方发送通知。</p>
+</blockquote>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">let</span> globalData <span class="token operator">=</span> <span class="token punctuation">{</span>
+    text<span class="token operator">:</span> <span class="token string">'浪里行舟'</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token keyword">let</span> test1 <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Vue</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+    template<span class="token operator">:</span>
+        <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">&lt;div&gt;
+            &lt;span&gt;{{text}}&lt;/span&gt; 
+        &lt;div&gt;</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">,</span>
+    data<span class="token operator">:</span> globalData
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">let</span> test2 <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Vue</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+    template<span class="token operator">:</span>
+        <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">&lt;div&gt;
+            &lt;span&gt;{{text}}&lt;/span&gt; 
+        &lt;div&gt;</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">,</span>
+    data<span class="token operator">:</span> globalData
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>如果执行以下语句：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">globalData<span class="token punctuation">.</span>text <span class="token operator">=</span> <span class="token string">'zzLab'</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>就需要通知 <code>test1</code> 以及 <code>test2</code> 这两个Vue实例进行视图的<code>更新</code>,我们只有通过<code>收集依赖</code>才能知道哪些地方依赖我的数据，以及数据更新时<code>派发更新</code>。那依赖收集是如何实现的？其中的核心思想就是“事件发布订阅模式”。</p>
+<h3 id="4-2-如何收集依赖"><a class="header-anchor" href="#4-2-如何收集依赖"> </a>4.2. 如何收集依赖</h3>
+<h4 id="4-2-1-订阅者Dep"><a class="header-anchor" href="#4-2-1-订阅者Dep"> </a>4.2.1 订阅者Dep</h4>
+<p><strong>为什么要引入Dep：</strong></p>
+<p>收集依赖需要为依赖找一个存储依赖的地方，为此我们创建了Dep。它用来<code>收集依赖</code>、<code>删除依赖</code>和<code>向依赖发送</code>消息等。 于是我们先来实现一个<code>订阅者 Dep 类</code>，用于<code>解耦属性</code>的依赖收集和派发更新操作，<strong>说得具体点</strong>：它的主要作用是用来<code>存放 Watcher 观察者</code>对象。我们可以把Watcher理解成一个<code>中介</code>的角色，<code>数据发生变化</code>时通知它，然后它再通知<code>其他地方</code>。</p>
+<p><strong>Dep的简单实现：</strong></p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">class</span> <span class="token class-name">Dep</span> <span class="token punctuation">{</span>
+    <span class="token function">constructor</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token comment">/* 用来存放Watcher对象的数组 */</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>subs <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token comment">/* 在subs中添加一个Watcher对象 */</span>
+    <span class="token function">addSub</span> <span class="token punctuation">(</span><span class="token parameter">sub</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>subs<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>sub<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span>
+    <span class="token comment">/* 通知所有Watcher对象更新视图 */</span>
+    <span class="token function">notify</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>subs<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">sub</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+            sub<span class="token punctuation">.</span><span class="token function">update</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+		<span class="token punctuation">}</span><span class="token punctuation">)</span>
+	<span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>以上代码主要做了两件事：</p>
+<ul>
+<li>用 addSub 方法可以在目前的 <code>Dep</code> 对象中增加一个 <code>Watcher</code> 的订阅操作；</li>
+<li>用 notify 方法通知目前 <code>Dep</code> 对象的 <code>subs</code> 中的所有 <code>Watcher</code> 对象触发更新操作。 所以当需要<code>依赖收集</code>的时候调用 addSub，当需要<code>派发更新</code>的时候调用 notify。</li>
+</ul>
+<p>调用：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">let</span> dp <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Dep</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+dp<span class="token punctuation">.</span><span class="token function">addSub</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span><span class="token comment">//依赖收集的时候</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'emit here'</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+dp<span class="token punctuation">.</span><span class="token function">notify</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token comment">//派发更新的时候</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h4 id="4-2-2-观察者-Watcher"><a class="header-anchor" href="#4-2-2-观察者-Watcher"> </a>4.2.2. 观察者 Watcher</h4>
+<p>Vue 中定义一个 Watcher 类来表示<code>观察订阅依赖</code>。</p>
+<p><strong>为什么要引入Watcher：</strong></p>
+<p>当<code>属性</code>发生变化后，我们要通知<code>用到数据</code>的地方，而使用这个数据的地方有很多，而且类型还不一样，既有可能是模板，也有可能是用户写的一个watch,这时需要抽象出一个<code>能集中处理</code>这些情况的类。然后，我们在依赖收集阶段只收集这个封装好的类的实例进来，通知也只通知它一个，再由它负责通知其他地方。</p>
+<p><strong>依赖收集的目的：</strong></p>
+<p>将观察者 Watcher 对象存放到当前闭包中的订阅者 Dep 的 subs 中。</p>
+<p>形成如下所示的这样一个关系<br>
+<img src="https://user-gold-cdn.xitu.io/2020/7/12/17343bec8082db69?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt="参见《剖析Vue.js内部运行机制》"></p>
+<p><strong>Watcher的简单简单实现：</strong></p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">class</span> <span class="token class-name">Watcher</span> <span class="token punctuation">{</span>
+  <span class="token function">constructor</span><span class="token punctuation">(</span><span class="token parameter">obj<span class="token punctuation">,</span> key<span class="token punctuation">,</span> cb</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// 将 Dep.target 指向自己</span>
+    <span class="token comment">// 然后触发属性的 getter 添加监听</span>
+    <span class="token comment">// 最后将 Dep.target 置空</span>
+    Dep<span class="token punctuation">.</span>target <span class="token operator">=</span> <span class="token keyword">this</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>cb <span class="token operator">=</span> cb
+    <span class="token keyword">this</span><span class="token punctuation">.</span>obj <span class="token operator">=</span> obj
+    <span class="token keyword">this</span><span class="token punctuation">.</span>key <span class="token operator">=</span> key
+    <span class="token keyword">this</span><span class="token punctuation">.</span>value <span class="token operator">=</span> obj<span class="token punctuation">[</span>key<span class="token punctuation">]</span>
+    Dep<span class="token punctuation">.</span>target <span class="token operator">=</span> <span class="token keyword">null</span>
+  <span class="token punctuation">}</span>
+  <span class="token function">update</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// 获得新值</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>value <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>obj<span class="token punctuation">[</span><span class="token keyword">this</span><span class="token punctuation">.</span>key<span class="token punctuation">]</span>
+   <span class="token comment">// 我们定义一个 cb 函数，这个函数用来模拟视图更新，调用它即代表更新视图</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">cb</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>value<span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>在执行构造函数的时候将 Dep.target 指向自身，从而使得收集到了对应的 Watcher，在派发更新的时候取出对应的 Watcher，然后执行 update 函数。</p>
+<h3 id="4-3-依赖的本质"><a class="header-anchor" href="#4-3-依赖的本质"> </a>4.3 依赖的本质</h3>
+<p>所谓的<code>依赖</code>，其实就是<code>Watcher</code>。</p>
+<h3 id="4-4-如何收集依赖"><a class="header-anchor" href="#4-4-如何收集依赖"> </a>4.4 如何收集依赖</h3>
+<p>**一句话概括：**在<code>getter</code>中收集依赖，在<code>setter</code>中触发依赖。先收集依赖，即把用到该数据的地方<code>收集起来</code>，然后等<code>属性发生变化</code>时，把之前收集好的依赖<code>循环触发</code>一遍就行了。</p>
+<p>具体来说，当外界通过Watcher<code>读取数据</code>时，便会触发<code>getter</code>从而将<code>Watcher添加到依赖中</code>，哪个Watcher触发了getter，就把哪个Watcher收集到Dep中。当数据发生变化时，会循环依赖列表，把所有的Watcher都通知一遍。</p>
+<h2 id="5-流程图"><a class="header-anchor" href="#5-流程图"> </a>5. 流程图</h2>
+<p><img src="https://user-gold-cdn.xitu.io/2020/7/12/17343bec82aa9093?imageView2/0/w/1280/h/960/format/webp/ignore-error/1" alt="流程图"></p>
+<ul>
+<li>在 new Vue() 后， Vue 会调用_init 函数进行初始化，也就是init 过程，在 这个过程Data通过Observer转换成了getter/setter的形式，来对数据追踪变化，当被设置的对象被读取的时候会执行getter 函数，而在当被赋值的时候会执行 setter函数。</li>
+<li>当外界通过Watcher读取数据时，会触发getter从而将Watcher添加到依赖中。</li>
+<li>在修改对象的值的时候，会触发对应的setter， setter通知之前依赖收集得到的 Dep 中的每一个 Watcher，告诉它们自己的值改变了，需要重新渲染视图。这时候这些 Watcher就会开始调用 update 来更新视图。</li>
+</ul>
+<h2 id="参考资料"><a class="header-anchor" href="#参考资料"> </a>参考资料</h2>
+<p><a target="_blank" rel="noopener" href="https://juejin.cn/post/6850418111985352711">vue响应式详解（重学前端-vue篇1）</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>给作者倒一杯 Java |ૂ•ᴗ•⸝⸝)</div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.jpg" alt="小周 微信">
+        <span>微信</span>
+      </div>
+
+  </div>
+</div>
+
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>小周
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://zzzzzzzzzzmj.github.io/zmj.github.io/2021/04/22/Vue%E5%93%8D%E5%BA%94%E5%BC%8F%E5%8E%9F%E7%90%86/" title="Vue响应式原理">https://zzzzzzzzzzmj.github.io/zmj.github.io/2021/04/22/Vue响应式原理/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E6%90%AC%E8%BF%90/" rel="tag"># 搬运</a>
+              <a href="/tags/Vue/" rel="tag"># Vue</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/04/22/%E5%85%B3%E4%BA%8EVue/" rel="prev" title="关于Vue">
+                  <i class="fa fa-chevron-left"></i> 关于Vue
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/04/30/%E6%B8%85%E6%A5%9A%E6%90%9E%E6%87%82HTTP%E5%8F%8AHTTPS/" rel="next" title="清楚搞懂HTTP及HTTPS">
+                  清楚搞懂HTTP及HTTPS <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div><script src="/js/comments.js"></script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian">
+  </div>
+
+<div class="copyright">
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fas fa-carrot"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小周</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+      <span>站点总字数：</span>
+    <span title="站点总字数">259k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span>站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">3:55</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://unpkg.com/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script>
+
+  
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{&quot;enable&quot;:true,&quot;tags&quot;:&quot;none&quot;,&quot;js&quot;:&quot;https:&#x2F;&#x2F;unpkg.com&#x2F;mathjax@3.1.2&#x2F;es5&#x2F;tex-mml-chtml.js&quot;}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://unpkg.com/gitalk@1.7.2/dist/gitalk.css">
+
+<script class="next-config" data-name="gitalk" type="application/json">{&quot;enable&quot;:true,&quot;github_id&quot;:&quot;zzzzzzzzzzmj&quot;,&quot;repo&quot;:&quot;blog-comment&quot;,&quot;client_id&quot;:&quot;fcfb5b509516a117acaa&quot;,&quot;client_secret&quot;:&quot;fed028539de4e797eed5463bac8a25cf52bfeae4&quot;,&quot;admin_user&quot;:&quot;zzzzzzzzzzmj&quot;,&quot;distraction_free_mode&quot;:true,&quot;proxy&quot;:&quot;https:&#x2F;&#x2F;cors-anywhere.azm.workers.dev&#x2F;https:&#x2F;&#x2F;github.com&#x2F;login&#x2F;oauth&#x2F;access_token&quot;,&quot;language&quot;:&quot;zh-CN&quot;,&quot;js&quot;:&quot;https:&#x2F;&#x2F;unpkg.com&#x2F;gitalk@1.7.2&#x2F;dist&#x2F;gitalk.min.js&quot;,&quot;path_md5&quot;:&quot;de16022c0ceac6ddf47421e195ad8f77&quot;}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>
