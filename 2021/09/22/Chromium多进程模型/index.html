@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#eeb8c3">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#eeb8c3">
+  <meta name="baidu-site-verification" content="code-wvYwrV1HmI">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://unpkg.com/@fortawesome/fontawesome-free@5.15.3/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/animate.css@3.1.1/animate.min.css">
+
+<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;gagalab.tech&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Gemini&quot;,&quot;version&quot;:&quot;8.3.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:true,&quot;bookmark&quot;:{&quot;enable&quot;:true,&quot;color&quot;:&quot;#FFAFB7&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;buttons&quot;,&quot;active&quot;:&quot;gitalk&quot;,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null,&quot;activeClass&quot;:&quot;gitalk&quot;},&quot;motion&quot;:{&quot;enable&quot;:true,&quot;async&quot;:true,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;},&quot;path&quot;:&quot;&#x2F;search.xml&quot;,&quot;localsearch&quot;:{&quot;enable&quot;:true,&quot;trigger&quot;:&quot;auto&quot;,&quot;top_n_per_article&quot;:1,&quot;unescape&quot;:false,&quot;preload&quot;:false}}</script>
+<meta name="description" content="Chromium 是 Chrome 的试炼场，一般选择稳定版本作为 Chrome 的基础。本文主要介绍了 Chromium 的“四个”多进程模型，另外简要介绍了 WebKit、Webkit2、沙箱模型。文末推荐了 Google 在 Chrome 诞生十周年时发布的一组漫画，形象地介绍了 Chrome 的核心功能，不要错过哦！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="技术分享06-Chromium多进程模型">
+<meta property="og:url" content="http://gagalab.tech/2021/09/22/Chromium%E5%A4%9A%E8%BF%9B%E7%A8%8B%E6%A8%A1%E5%9E%8B/index.html">
+<meta property="og:site_name" content="嘎嘎研究所">
+<meta property="og:description" content="Chromium 是 Chrome 的试炼场，一般选择稳定版本作为 Chrome 的基础。本文主要介绍了 Chromium 的“四个”多进程模型，另外简要介绍了 WebKit、Webkit2、沙箱模型。文末推荐了 Google 在 Chrome 诞生十周年时发布的一组漫画，形象地介绍了 Chrome 的核心功能，不要错过哦！">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2021/09/27/rs5ITSegvcAh9qd.png">
+<meta property="article:published_time" content="2021-09-22T08:35:50.000Z">
+<meta property="article:modified_time" content="2021-09-27T12:01:32.000Z">
+<meta property="article:author" content="嘎嘎">
+<meta property="article:tag" content="技术分享">
+<meta property="article:tag" content="Chromium">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2021/09/27/rs5ITSegvcAh9qd.png">
+
+
+<link rel="canonical" href="http://gagalab.tech/2021/09/22/Chromium%E5%A4%9A%E8%BF%9B%E7%A8%8B%E6%A8%A1%E5%9E%8B/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;http:&#x2F;&#x2F;gagalab.tech&#x2F;2021&#x2F;09&#x2F;22&#x2F;Chromium%E5%A4%9A%E8%BF%9B%E7%A8%8B%E6%A8%A1%E5%9E%8B&#x2F;&quot;,&quot;path&quot;:&quot;2021&#x2F;09&#x2F;22&#x2F;Chromium多进程模型&#x2F;&quot;,&quot;title&quot;:&quot;技术分享06-Chromium多进程模型&quot;}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<title>技术分享06-Chromium多进程模型 | 嘎嘎研究所</title><script src="/js/config.js"></script>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?e5d9d728fe85990111d542575e01e3ab"></script>
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">嘎嘎研究所</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">gagaLab</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-works"><a href="/works/" rel="section"><i class="fa fa-trophy fa-fw"></i>作品</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-sitemap"><a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-text">概述</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%9A%E8%BF%9B%E7%A8%8B%E6%9E%B6%E6%9E%84%E7%9A%84%E5%A5%BD%E5%A4%84"><span class="nav-text">多进程架构的好处</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Chromium-%E7%9A%84%E8%BF%9B%E7%A8%8B%E6%A8%A1%E5%9E%8B"><span class="nav-text">Chromium 的进程模型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Chromium-%E6%94%AF%E6%8C%81%E7%9A%84%E6%A8%A1%E5%9E%8B"><span class="nav-text">Chromium 支持的模型</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%95%E7%BD%91%E7%AB%99%E5%AE%9E%E4%BE%8B%E5%8D%95%E8%BF%9B%E7%A8%8B%EF%BC%88%E9%BB%98%E8%AE%A4%EF%BC%89"><span class="nav-text">单网站实例单进程（默认）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%95%E7%BD%91%E7%AB%99%E5%8D%95%E8%BF%9B%E7%A8%8B"><span class="nav-text">单网站单进程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%95%E6%A0%87%E7%AD%BE%E9%A1%B5%E5%8D%95%E8%BF%9B%E7%A8%8B"><span class="nav-text">单标签页单进程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%95%E8%BF%9B%E7%A8%8B"><span class="nav-text">单进程</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-text">参考资料</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <a href="/about/">
+    <img class="site-author-image" itemprop="image" alt="嘎嘎"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">嘎嘎</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">26</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Gainii" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Gainii" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:1046900741@qq.com" title="E-Mail → mailto:1046900741@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/weixin_44580076" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;weixin_44580076" rel="noopener" target="_blank"><i class="fab fa-codiepie fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://gagalab.tech/2021/09/22/Chromium%E5%A4%9A%E8%BF%9B%E7%A8%8B%E6%A8%A1%E5%9E%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="嘎嘎">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="嘎嘎研究所">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          技术分享06-Chromium多进程模型
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+
+  
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-09-22 16:35:50" itemprop="dateCreated datePublished" datetime="2021-09-22T16:35:50+08:00">2021-09-22</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-09-27 20:01:32" itemprop="dateModified" datetime="2021-09-27T20:01:32+08:00">2021-09-27</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%B5%8F%E8%A7%88%E5%99%A8/" itemprop="url" rel="index"><span itemprop="name">浏览器</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>4.3k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>4 分钟</span>
+    </span>
+</div>
+
+            <div class="post-description">Chromium 是 Chrome 的试炼场，一般选择稳定版本作为 Chrome 的基础。本文主要介绍了 Chromium 的“四个”多进程模型，另外简要介绍了 WebKit、Webkit2、沙箱模型。文末推荐了 Google 在 Chrome 诞生十周年时发布的一组漫画，形象地介绍了 Chrome 的核心功能，不要错过哦！</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="概述"><a class="header-anchor" href="#概述"> </a>概述</h1>
+<p>相信你一定有这样的经历：打开很多个页面，不幸的是其中某个页面不响应了或者崩溃了，随之而来的是更不幸的事，所有页面都不响应或者都崩溃了。最让人崩溃的是其中一些页面还有未保存或者未发送的信息！但是，现在好了，现代浏览器很多都支持多进程模型，这个模型可以很好地避免上面的问题，虽然它很复杂而且也有自身的问题，例如更多的资源消耗，但是它的优势也是非常明显的。</p>
+<p>Chromium被构建得像一个操作系统，使用多进程隔离每个网站和浏览器自身，以一种安全而鲁棒的方式运行这些程序即使崩溃也不会互相影响。用户也可以在Chromium的任务管理器里查看每个进程的资源使用情况。</p>
+<h2 id="多进程架构的好处"><a class="header-anchor" href="#多进程架构的好处"> </a>多进程架构的好处</h2>
+<p>Chromium的多进程架构至少带来三点好处：</p>
+<ol>
+<li>避免单个页面的不响应或者奔溃影响整个浏览器的稳定性；</li>
+<li>当第三方插件奔溃时候不会影响页面或者浏览器的稳定性；</li>
+<li>方便了安全模型的实施，也就是说沙箱模型是基于多进程架构的。</li>
+</ol>
+<p>其实，这很大程度上也是WebKit2产生的原因。</p>
+<blockquote>
+<p><strong>WebKit：</strong></p>
+<p>​		**广义上来说，WebKit是一个开源的项目。该项目专注于网页内容的展示，开发出一流的网页渲染引擎。**该项目包含两个部分，第一是WebCore，其中包含了对HTML，CSS等很多W3C规范的实现；第二部分就是狭义上的WebKit，它主要是各个平台的的移植并提供相对应的Web接口，也就是WebView或者类似WebView，这些接口提供操作和显示网页的能力。目前使用WebKit的主流的浏览器或者WebView包括Chrome，Safari，QtWebKit，Android Browser以及众多的移动平台的浏览器。</p>
+<p><strong>WebKit2：</strong></p>
+<p>​        WebKit2相对于狭义上的WebKit而言，**它不是WebKit简单的第二个版本，它是一个新的API层，其最主要的变化在于将网页的渲染置于单独的进程，而接口层则在另外一个进程，它们之间通过IPC来通讯。**对于接口的调用者来说，中间的IPC和底下的实现是透明的，这样做的好处有很多，一个很明显的好处是，当网页的渲染出现问题时，不会阻碍Web接口的调用者进程，这会在很大程度上解决或者帮助解决浏览器或者这些调用者的稳定性和安全性等问题。</p>
+<p><strong>Chromium：</strong></p>
+<p>​		**Chromium是一个建立在WebKit之上的浏览器开源项目，由Google发起的。**该项目被创建以来发展迅速，很多先进的技术被采用，如跨进程模型，沙箱模型等等。同时，很多新的规范被支持，例如WebGL，Canvas2D，CSS3以及其他很多的HTML5特性，基本上每天你都可以看到它的变化，它的版本升级很快。在性能方面，其也备受称赞，包括快速启动，网页加载迅速等。</p>
+<p><strong>Chrome：</strong></p>
+<p>​		Chrome是Google公司的浏览器产品，它基于Chromium开源项目，**一般选择稳定的版本作为它的基础，它和Chromium的不同点在于Chromium是开源试验场，会尝试很多新的东西，当这些东西稳定之后，Chrome才会集成进来，这也就是说Chrome的版本会落后于Chromium。**另外一个就是，Chrome里面会加入一些私有的codec，这些仅在Chrome中才会出现。再次，Chrome还会整合Google的很多服务， 最后Chrome还会有自动更新的功能，这也是Chromium所没有的。</p>
+</blockquote>
+<blockquote>
+<p>​        <strong>在每个多进程架构里，Chromium的渲染器进程运行在一个沙箱进程中，它对用户电脑只有有限的访问权限。这些进程对用户的文件系统，显示器，或者大部分其他的资源没有直接的接触。相反，他们只通过浏览器进程获得对允许的资源的访问，而浏览器进程可以在这种访问上附加安全策略。</strong></p>
+<p><strong>沙盒模型：</strong></p>
+<p>​		一般而言，对于网络上的网页中的JavaScript代码和插件都是不受信的（除非是经过认证的网站），特别是一些故意设计侵入浏览器运行的主机代码更是非常危险，通过一些手段或者浏览器中的漏洞，这些代码可能获取了主机的管理权限，这对主机系统来说是非常危险的，所以保证网页本身之外，还需要保证浏览器和浏览器所在的系统不存在危险。</p>
+<p>如果有一种机制，将网页的运行限制在一个特定的环境中，也就是一个沙箱中，使它只能访问有限的功能。那么，即使网页工作的渲染引擎被攻击，它也不能够获取渲染引擎工作的主机系统中的任何权限，这一思想就是沙箱模型。</p>
+<p>“沙盒”技术与主动防御技术原理截然不同。主动防御是发现程序有可疑行为时立即拦截并终止运行。“沙盒”技术则是发现可疑行为后让程序继续运行，当发现的确是病毒时才会终止。<strong>“沙盒”技术的实践运用流程是：让疑似病毒文件的可疑行为在虚拟的“沙盒”里充分表演，“沙盒”会记下它的每一个动作；当疑似病毒充分暴露了其病毒属性后，“沙盒”就会执行“回滚”机制——将病毒的痕迹和动作抹去，恢复系统到正常状态。</strong></p>
+<p>简单来说就是，在一个装满了平整细沙的盒子里，我们可以尽情随意地在上面作画、涂写，无论画的好坏，最后轻轻一抹，沙盒又回到了原来的平整状态。沙盒的魅力就在于他允许你出错，还可以给你改正的机会。</p>
+</blockquote>
+<h1 id="Chromium-的进程模型"><a class="header-anchor" href="#Chromium-的进程模型"> </a>Chromium 的进程模型</h1>
+<p>下图给出了缺省的Chromium浏览器的进程模型。方框代表进程，连接线代表IPC（InterProcess Communication 进程间通信）。</p>
+<p><img src="https://i.loli.net/2021/09/27/rs5ITSegvcAh9qd.png" alt=""></p>
+<p>通常来讲，chromium浏览器包括以下主要进程类型：</p>
+<ol>
+<li>
+<p>Browser进程：浏览器的主进程，负责浏览器界面的显示，各个页面的管理，其他各种进程的管理；</p>
+</li>
+<li>
+<p>Render进程：页面的渲染进程，负责页面的渲染工作，WebKit的工作主要在这个进程中完成；</p>
+</li>
+<li>
+<p>NPAPI插件进程：每种类型的插件只会有一个进程，每个插件进程可以被多个Render进程共享；</p>
+</li>
+<li>
+<p>GPU进程：最多只有一个，当且仅当GPU硬件加速打开的时候才会被创建，主要用于对3D加速调用的实现；</p>
+</li>
+<li>
+<p>Pepper插件进程：同NPAPI插件进程，不同的是为Pepper插件而创建的进程。</p>
+</li>
+</ol>
+<p>Chromium浏览器的进程模型，包括以下特征：</p>
+<ol>
+<li>
+<p>Browser进程和页面是分开的，这保证了页面的奔溃不会导致浏览器主界面的奔溃；</p>
+</li>
+<li>
+<p>每个页面是独立的进程，这保证了页面之间相互不影响；</p>
+</li>
+<li>
+<p>插件进程也是独立的，插件的问题不会影响浏览器主界面和页面；</p>
+</li>
+<li>
+<p>GPU硬件加速进程也是独立的。</p>
+</li>
+</ol>
+<p>因为这么多的进程，开发者通常需要知道进程列表中的进程类别，这很简单，可以通过进程的命令行参数"–type"来识别。</p>
+<h1 id="Chromium-支持的模型"><a class="header-anchor" href="#Chromium-支持的模型"> </a>Chromium 支持的模型</h1>
+<p>Chromium支持四种不同的模型，它们影响浏览器分配页面给渲染进程的行为。</p>
+<h2 id="单网站实例单进程（默认）"><a class="header-anchor" href="#单网站实例单进程（默认）"> </a>单网站实例单进程（默认）</h2>
+<p>默认情况下，Chromium为用户访问的每个网站实例创建一个渲染器进程。这保证了不同网站的网页独立渲染，让对同一个网站的不同访问相互独立。因此一个网站实例中的失败（比如，渲染器崩溃）或者重的资源使用不会影响浏览器的其他部分。</p>
+<p>一个网站实例是一些相同网站的相连网页的集合。我们这样认为两个页面是相连的：如果他们可以在脚本代码中获取彼此的引用的话（比如：如果一个页面被另一个页面用Javascript在一个新窗口中打开）。因此，两个标签页可以在同一个渲染进程里展示页面，同时在给定的一个标签页中导航到网站外的一个网页，可能切换标签页的渲染进程。</p>
+<p><strong>优点</strong></p>
+<ul>
+<li>隔离不同网站的内容。这提供了网页内容的命运共享的一种有意义的形式，在这种形式中，网页间的失败不会相互影响。</li>
+<li>隔离展示相同网站的独立标签页。在不同的标签页中独立访问同样的网站会创建不同的进程。这可以避免同个实例中的争夺与失败，使其不会影响其他实例。</li>
+</ul>
+<p><strong>缺点</strong></p>
+<ul>
+<li>更多的内存负载。在大多数工作负载下，这个模型会比下面的每个网站一个进程创建更多渲染器进程。这虽然能增加稳定性并且增加并发的机会，但它也增加了内存负载。</li>
+<li>更复杂的实现。不像每个标签页一个进程或者单进程，这个模型需要复杂的逻辑以支持标签在网页间导航时的进程交换，以及代理一些允许的源之间的JavaScript行为，比如传递消息。</li>
+</ul>
+<h2 id="单网站单进程"><a class="header-anchor" href="#单网站单进程"> </a>单网站单进程</h2>
+<p>Chromium也支持这样一种进程模式，隔离不同的网站，但将相同网站的所有实例组合到一块。这创建更少的渲染进程，用鲁棒性交换更少的内存占用。这个模型基于内容的源，而非标签页间的关系。</p>
+<p><strong>优点</strong></p>
+<ul>
+<li>隔离不同网站的内容。正如每个网站实例一个进程的模型那样，不同网站的页面不会共享命运（不会同生共死）。</li>
+<li>更少的内存占用。这个模型比上一个模型和每个标签一个进程的模型可能创建更少的并行进程。这对于减少Chromium的内存足迹可能是需要的。</li>
+</ul>
+<p><strong>缺点</strong></p>
+<ul>
+<li>可能导致更大的渲染进程。像google.com这样的站点上有着大量的应用程序，它们可能在浏览器里被同时打开，并且全部在同一个进程里渲染。因此，这些应用程序中的资源争夺与失败会影响许多标签页，使得浏览器看起来不能更好地响应。</li>
+<li>实现更加复杂。与每个网站实例一个进程的模型相似，这需要在导航中交换进程以及代理一些javascript操作的逻辑。</li>
+</ul>
+<h2 id="单标签页单进程"><a class="header-anchor" href="#单标签页单进程"> </a>单标签页单进程</h2>
+<p>每个网站或每个网站实例一个进程都需要在创建渲染进程时考虑网站内容的源。Chromium也支持一种简单的模型，将一个渲染器进程分配给每组脚本相关的标签页。这个模型可以使用 --process-per-tab命令行开关来选中。</p>
+<p>特别地，Chromium会把一些脚本相关联的标签页成为一个浏览实例，它也与HTML5范畴中的“一个浏览上下文”对应。这个集合由一个标签以及这个标签用javascript代码所打开的标签组合而成。这样的标签必须在同一个进程中渲染，以允许在这些标签页间执行javascript调用（大多数通常发生在同源页面之间）。</p>
+<p><strong>优点</strong></p>
+<ul>
+<li>容易理解。每个标签页分配有一个渲染进程。</li>
+</ul>
+<p><strong>缺点</strong></p>
+<ul>
+<li>导致不想要的页面之间的命运共享。如果用户在浏览实例中导航一个标签页到一个不同的网站中，新的页面会和其他在同一个浏览实例中的任何其他标签页共享命运。</li>
+<li>在实践中并没有比单个网站实例单进程更简单。</li>
+</ul>
+<h2 id="单进程"><a class="header-anchor" href="#单进程"> </a>单进程</h2>
+<p>最后，出于比较的目的，Chromium支持单进程模型。在这个模型中，浏览器和渲染引擎跑在同一个操作系统进程里。</p>
+<p>单进程模型提供了一个衡量多进程架构带来的负荷的基线。这不是一个安全的架构，也不是一个鲁棒的架构，因为任何渲染器的崩溃会导致整个浏览器进程挂掉。它只是设计用于测试和开发目的，并且可能包含在其他架构中没有的bug。</p>
+<h1 id="参考资料"><a class="header-anchor" href="#参考资料"> </a>参考资料</h1>
+<p><a target="_blank" rel="noopener" href="https://www.cntofu.com/book/101/zh/General_Architecture/Process_Models.md">进程模型 - Chromium中文文档</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/milado_nju/article/details/7292164">理解WebKit和Chromium: WebKit, WebKit2, Chromium和Chrome介绍 - CSDN</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/haima1998/article/details/9292047">webkit和webkit2的区别 - CSDN</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/slly/p/6639173.html">浏览器沙箱模型 - 博客园</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/iteye_10668/article/details/81618053">Google Chrome漫画书中文版  - CSDN</a></p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>给作者倒一杯 Java |ૂ•ᴗ•⸝⸝)</div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.jpg" alt="嘎嘎 微信">
+        <span>微信</span>
+      </div>
+
+  </div>
+</div>
+
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>嘎嘎
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="http://gagalab.tech/2021/09/22/Chromium%E5%A4%9A%E8%BF%9B%E7%A8%8B%E6%A8%A1%E5%9E%8B/" title="技术分享06-Chromium多进程模型">http://gagalab.tech/2021/09/22/Chromium多进程模型/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E6%8A%80%E6%9C%AF%E5%88%86%E4%BA%AB/" rel="tag"># 技术分享</a>
+              <a href="/tags/Chromium/" rel="tag"># Chromium</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/08/31/%E6%8A%80%E6%9C%AF%E5%88%86%E4%BA%AB04-Rebase/" rel="prev" title="技术分享04 - Rebase">
+                  <i class="fa fa-chevron-left"></i> 技术分享04 - Rebase
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/10/11/%E6%8A%80%E6%9C%AF%E5%88%86%E4%BA%AB07-CSRF%E6%94%BB%E5%87%BB/" rel="next" title="技术分享07 - CSRF攻击">
+                  技术分享07 - CSRF攻击 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div><script src="/js/comments.js"></script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">蜀ICP备2021017211号-1 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fas fa-carrot"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">嘎嘎</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+      <span>站点总字数：</span>
+    <span title="站点总字数">259k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span>站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">3:55</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://unpkg.com/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script>
+
+  
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{&quot;enable&quot;:true,&quot;tags&quot;:&quot;none&quot;,&quot;js&quot;:&quot;https:&#x2F;&#x2F;unpkg.com&#x2F;mathjax@3.1.2&#x2F;es5&#x2F;tex-mml-chtml.js&quot;}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://unpkg.com/gitalk@1.7.2/dist/gitalk.css">
+
+<script class="next-config" data-name="gitalk" type="application/json">{&quot;enable&quot;:true,&quot;github_id&quot;:&quot;Gainii&quot;,&quot;repo&quot;:&quot;blog-comment&quot;,&quot;client_id&quot;:&quot;fcfb5b509516a117acaa&quot;,&quot;client_secret&quot;:&quot;fed028539de4e797eed5463bac8a25cf52bfeae4&quot;,&quot;admin_user&quot;:&quot;Gainii&quot;,&quot;distraction_free_mode&quot;:true,&quot;proxy&quot;:&quot;https:&#x2F;&#x2F;cors-anywhere.azm.workers.dev&#x2F;https:&#x2F;&#x2F;github.com&#x2F;login&#x2F;oauth&#x2F;access_token&quot;,&quot;language&quot;:&quot;zh-CN&quot;,&quot;js&quot;:&quot;https:&#x2F;&#x2F;unpkg.com&#x2F;gitalk@1.7.2&#x2F;dist&#x2F;gitalk.min.js&quot;,&quot;path_md5&quot;:&quot;ae8ae03042dd2ad0cefa7899a04fc65d&quot;}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>

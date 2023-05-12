@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#eeb8c3">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#eeb8c3">
+  <meta name="baidu-site-verification" content="code-wvYwrV1HmI">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://unpkg.com/@fortawesome/fontawesome-free@5.15.3/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/animate.css@3.1.1/animate.min.css">
+
+<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;gagalab.tech&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Gemini&quot;,&quot;version&quot;:&quot;8.3.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:true,&quot;bookmark&quot;:{&quot;enable&quot;:true,&quot;color&quot;:&quot;#FFAFB7&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;buttons&quot;,&quot;active&quot;:&quot;gitalk&quot;,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null,&quot;activeClass&quot;:&quot;gitalk&quot;},&quot;motion&quot;:{&quot;enable&quot;:true,&quot;async&quot;:true,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;},&quot;path&quot;:&quot;&#x2F;search.xml&quot;,&quot;localsearch&quot;:{&quot;enable&quot;:true,&quot;trigger&quot;:&quot;auto&quot;,&quot;top_n_per_article&quot;:1,&quot;unescape&quot;:false,&quot;preload&quot;:false}}</script>
+<meta name="description" content="几个有关 TypeScript 的小技巧～">
+<meta property="og:type" content="article">
+<meta property="og:title" content="技术分享03 - 几个TypeScript小技巧">
+<meta property="og:url" content="http://gagalab.tech/2021/08/30/%E6%8A%80%E6%9C%AF%E5%88%86%E4%BA%AB03-%E5%87%A0%E4%B8%AATypeScript%E5%B0%8F%E6%8A%80%E5%B7%A7/index.html">
+<meta property="og:site_name" content="嘎嘎研究所">
+<meta property="og:description" content="几个有关 TypeScript 的小技巧～">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2021/08/30/rmL8ab5EDpi47jJ.png">
+<meta property="og:image" content="https://i.loli.net/2021/08/31/D9UJB71zRZVyYwC.png">
+<meta property="og:image" content="https://i.loli.net/2021/08/31/XlmL1phRc4gQOiT.png">
+<meta property="og:image" content="https://i.loli.net/2021/08/31/gPnaBlw8NjsOIvX.png">
+<meta property="og:image" content="https://i.loli.net/2021/08/31/nUlfVQZMCTKLPwN.png">
+<meta property="og:image" content="https://i.loli.net/2021/08/31/myRYiQ3p74Mu91a.png">
+<meta property="og:image" content="https://i.loli.net/2021/08/31/U68CKsroZj142yI.png">
+<meta property="og:image" content="https://i.loli.net/2021/08/31/CyLn2A1Y6ZNcqQp.png">
+<meta property="og:image" content="https://i.loli.net/2021/08/31/NigLyd2jrH4VvGo.png">
+<meta property="og:image" content="https://i.loli.net/2021/08/31/PoMlL2XzkDmKcr9.png">
+<meta property="article:published_time" content="2021-08-30T06:20:00.000Z">
+<meta property="article:modified_time" content="2021-11-01T09:44:22.000Z">
+<meta property="article:author" content="嘎嘎">
+<meta property="article:tag" content="技术分享">
+<meta property="article:tag" content="TypeScript">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2021/08/30/rmL8ab5EDpi47jJ.png">
+
+
+<link rel="canonical" href="http://gagalab.tech/2021/08/30/%E6%8A%80%E6%9C%AF%E5%88%86%E4%BA%AB03-%E5%87%A0%E4%B8%AATypeScript%E5%B0%8F%E6%8A%80%E5%B7%A7/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;http:&#x2F;&#x2F;gagalab.tech&#x2F;2021&#x2F;08&#x2F;30&#x2F;%E6%8A%80%E6%9C%AF%E5%88%86%E4%BA%AB03-%E5%87%A0%E4%B8%AATypeScript%E5%B0%8F%E6%8A%80%E5%B7%A7&#x2F;&quot;,&quot;path&quot;:&quot;2021&#x2F;08&#x2F;30&#x2F;技术分享03-几个TypeScript小技巧&#x2F;&quot;,&quot;title&quot;:&quot;技术分享03 - 几个TypeScript小技巧&quot;}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<title>技术分享03 - 几个TypeScript小技巧 | 嘎嘎研究所</title><script src="/js/config.js"></script>
+  
+
+  <script src="/js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?e5d9d728fe85990111d542575e01e3ab"></script>
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">嘎嘎研究所</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">gagaLab</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-works"><a href="/works/" rel="section"><i class="fa fa-trophy fa-fw"></i>作品</a></li>
+        <li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-sitemap"><a href="/sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%B3%A8%E9%87%8A"><span class="nav-text">注释</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#interface-type"><span class="nav-text">interface &amp; type</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Interface"><span class="nav-text">Interface</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Type-alias"><span class="nav-text">Type alias</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E5%90%8C%E7%82%B9"><span class="nav-text">相同点</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Interface-extends-interface"><span class="nav-text">Interface extends interface</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Type-alias-extends-type-alias"><span class="nav-text">Type alias extends type alias</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Interface-extends-type-alias"><span class="nav-text">Interface extends type alias</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Type-alias-extends-interface"><span class="nav-text">Type alias extends interface</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8D%E5%90%8C%E7%82%B9"><span class="nav-text">不同点</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#type-%E5%8F%AF%E4%BB%A5%E8%80%8C-interface-%E4%B8%8D%E8%A1%8C"><span class="nav-text">type 可以而 interface 不行</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#interface-%E5%8F%AF%E4%BB%A5%E8%80%8C-type-%E4%B8%8D%E8%A1%8C"><span class="nav-text">interface 可以而 type 不行</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#typeof"><span class="nav-text">typeof</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#keyof"><span class="nav-text">keyof</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9F%A5%E6%89%BE%E7%B1%BB%E5%9E%8B"><span class="nav-text">查找类型</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#DeepReadonly"><span class="nav-text">DeepReadonly</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <a href="/about/">
+    <img class="site-author-image" itemprop="image" alt="嘎嘎"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">嘎嘎</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">26</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Gainii" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Gainii" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:1046900741@qq.com" title="E-Mail → mailto:1046900741@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/weixin_44580076" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;weixin_44580076" rel="noopener" target="_blank"><i class="fab fa-codiepie fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://gagalab.tech/2021/08/30/%E6%8A%80%E6%9C%AF%E5%88%86%E4%BA%AB03-%E5%87%A0%E4%B8%AATypeScript%E5%B0%8F%E6%8A%80%E5%B7%A7/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="嘎嘎">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="嘎嘎研究所">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          技术分享03 - 几个TypeScript小技巧
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+
+  
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-08-30 14:20:00" itemprop="dateCreated datePublished" datetime="2021-08-30T14:20:00+08:00">2021-08-30</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-11-01 17:44:22" itemprop="dateModified" datetime="2021-11-01T17:44:22+08:00">2021-11-01</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/TypeScript/" itemprop="url" rel="index"><span itemprop="name">TypeScript</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>3.1k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>3 分钟</span>
+    </span>
+</div>
+
+            <div class="post-description">几个有关 TypeScript 的小技巧～</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="注释"><a class="header-anchor" href="#注释"> </a>注释</h1>
+<p>通过 <code>/** */</code> 形式的注释可以给 TS 类型做标记提示，编辑器会有更好的提示：</p>
+<pre class="line-numbers language-typescript" data-language="typescript"><code class="language-typescript"><span class="token comment">/** This is person */</span>
+<span class="token keyword">interface</span> <span class="token class-name">Person</span> <span class="token punctuation">{</span>
+    <span class="token comment">/** This is his name */</span>
+    name<span class="token operator">:</span> <span class="token builtin">string</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">const</span> p<span class="token operator">:</span> Person <span class="token operator">=</span> <span class="token punctuation">{</span>
+    name<span class="token operator">:</span> <span class="token string">'Jack'</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>效果：</p>
+<img src="https://i.loli.net/2021/08/30/rmL8ab5EDpi47jJ.png" alt="image-20210830142651782" style="zoom:50%;">
+<img src="https://i.loli.net/2021/08/31/D9UJB71zRZVyYwC.png" alt="image-20210830142750952" style="zoom:50%;">
+<p>如果用 <code>// xxx</code> 的形式注释，就不会有上面的效果：</p>
+<img src="https://i.loli.net/2021/08/31/XlmL1phRc4gQOiT.png" alt="image-20210830143534203" style="zoom:50%;">
+<h1 id="interface-type"><a class="header-anchor" href="#interface-type"> </a>interface &amp; type</h1>
+<p>TypeScript 中定义类型的两种方式：接口（interface）和 类型别名（type alias）。</p>
+<p>比如下面的 Interface 和 Type alias 的例子中，除了语法，意思是一样的：</p>
+<h2 id="Interface"><a class="header-anchor" href="#Interface"> </a>Interface</h2>
+<pre class="line-numbers language-typescript" data-language="typescript"><code class="language-typescript"><span class="token keyword">interface</span> <span class="token class-name">Point</span> <span class="token punctuation">{</span>
+  x<span class="token operator">:</span> <span class="token builtin">number</span><span class="token punctuation">;</span>
+  y<span class="token operator">:</span> <span class="token builtin">number</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">interface</span> <span class="token class-name">SetPoint</span> <span class="token punctuation">{</span>
+  <span class="token punctuation">(</span>x<span class="token operator">:</span> <span class="token builtin">number</span><span class="token punctuation">,</span> y<span class="token operator">:</span> <span class="token builtin">number</span><span class="token punctuation">)</span><span class="token operator">:</span> <span class="token keyword">void</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h2 id="Type-alias"><a class="header-anchor" href="#Type-alias"> </a>Type alias</h2>
+<pre class="line-numbers language-typescript" data-language="typescript"><code class="language-typescript"><span class="token keyword">type</span> <span class="token class-name">Point</span> <span class="token operator">=</span> <span class="token punctuation">{</span>
+  x<span class="token operator">:</span> <span class="token builtin">number</span><span class="token punctuation">;</span>
+  y<span class="token operator">:</span> <span class="token builtin">number</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+<span class="token keyword">type</span> <span class="token class-name">SetPoint</span> <span class="token operator">=</span> <span class="token punctuation">(</span>x<span class="token operator">:</span> <span class="token builtin">number</span><span class="token punctuation">,</span> y<span class="token operator">:</span> <span class="token builtin">number</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token keyword">void</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>而且两者都可以扩展，但是语法有所不同。此外，请注意，接口和类型别名不是互斥的。接口可以扩展类型别名，反之亦然。</p>
+<h2 id="相同点"><a class="header-anchor" href="#相同点"> </a>相同点</h2>
+<h3 id="Interface-extends-interface"><a class="header-anchor" href="#Interface-extends-interface"> </a>Interface extends interface</h3>
+<pre class="line-numbers language-typescript" data-language="typescript"><code class="language-typescript"><span class="token keyword">interface</span> <span class="token class-name">PartialPointX</span> <span class="token punctuation">{</span> x<span class="token operator">:</span> <span class="token builtin">number</span><span class="token punctuation">;</span> <span class="token punctuation">}</span>
+<span class="token keyword">interface</span> <span class="token class-name">Point</span> <span class="token keyword">extends</span> <span class="token class-name">PartialPointX</span> <span class="token punctuation">{</span> y<span class="token operator">:</span> <span class="token builtin">number</span><span class="token punctuation">;</span> <span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<h3 id="Type-alias-extends-type-alias"><a class="header-anchor" href="#Type-alias-extends-type-alias"> </a>Type alias extends type alias</h3>
+<pre class="line-numbers language-typescript" data-language="typescript"><code class="language-typescript"><span class="token keyword">type</span> <span class="token class-name">PartialPointX</span> <span class="token operator">=</span> <span class="token punctuation">{</span> x<span class="token operator">:</span> <span class="token builtin">number</span><span class="token punctuation">;</span> <span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token keyword">type</span> <span class="token class-name">Point</span> <span class="token operator">=</span> PartialPointX <span class="token operator">&amp;</span> <span class="token punctuation">{</span> y<span class="token operator">:</span> <span class="token builtin">number</span><span class="token punctuation">;</span> <span class="token punctuation">}</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<h3 id="Interface-extends-type-alias"><a class="header-anchor" href="#Interface-extends-type-alias"> </a>Interface extends type alias</h3>
+<pre class="line-numbers language-typescript" data-language="typescript"><code class="language-typescript"><span class="token keyword">type</span> <span class="token class-name">PartialPointX</span> <span class="token operator">=</span> <span class="token punctuation">{</span> x<span class="token operator">:</span> <span class="token builtin">number</span><span class="token punctuation">;</span> <span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token keyword">interface</span> <span class="token class-name">Point</span> <span class="token keyword">extends</span> <span class="token class-name">PartialPointX</span> <span class="token punctuation">{</span> y<span class="token operator">:</span> <span class="token builtin">number</span><span class="token punctuation">;</span> <span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<h3 id="Type-alias-extends-interface"><a class="header-anchor" href="#Type-alias-extends-interface"> </a>Type alias extends interface</h3>
+<pre class="line-numbers language-typescript" data-language="typescript"><code class="language-typescript"><span class="token keyword">interface</span> <span class="token class-name">PartialPointX</span> <span class="token punctuation">{</span> x<span class="token operator">:</span> <span class="token builtin">number</span><span class="token punctuation">;</span> <span class="token punctuation">}</span>
+<span class="token keyword">type</span> <span class="token class-name">Point</span> <span class="token operator">=</span> PartialPointX <span class="token operator">&amp;</span> <span class="token punctuation">{</span> y<span class="token operator">:</span> <span class="token builtin">number</span><span class="token punctuation">;</span> <span class="token punctuation">}</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+<h2 id="不同点"><a class="header-anchor" href="#不同点"> </a>不同点</h2>
+<h3 id="type-可以而-interface-不行"><a class="header-anchor" href="#type-可以而-interface-不行"> </a>type 可以而 interface 不行</h3>
+<p>type 可以声明基本类型别名，联合类型，元组等类型</p>
+<pre class="line-numbers language-typescript" data-language="typescript"><code class="language-typescript"><span class="token comment">// 基本类型别名</span>
+<span class="token keyword">type</span> <span class="token class-name">Name</span> <span class="token operator">=</span> <span class="token builtin">string</span>
+ 
+<span class="token comment">// 联合类型</span>
+<span class="token keyword">interface</span> <span class="token class-name">Dog</span> <span class="token punctuation">{</span>
+    <span class="token function">wong</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">interface</span> <span class="token class-name">Cat</span> <span class="token punctuation">{</span>
+    <span class="token function">miao</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+ 
+<span class="token keyword">type</span> <span class="token class-name">Pet</span> <span class="token operator">=</span> Dog <span class="token operator">|</span> Cat
+ 
+<span class="token comment">// 具体定义数组每个位置的类型</span>
+<span class="token keyword">type</span> <span class="token class-name">PetList</span> <span class="token operator">=</span> <span class="token punctuation">[</span>Dog<span class="token punctuation">,</span> Pet<span class="token punctuation">]</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<h3 id="interface-可以而-type-不行"><a class="header-anchor" href="#interface-可以而-type-不行"> </a>interface 可以而 type 不行</h3>
+<p>interface 能够声明合并</p>
+<pre class="line-numbers language-typescript" data-language="typescript"><code class="language-typescript"><span class="token keyword">interface</span> <span class="token class-name">User</span> <span class="token punctuation">{</span>
+  name<span class="token operator">:</span> <span class="token builtin">string</span>
+  age<span class="token operator">:</span> <span class="token builtin">number</span>
+<span class="token punctuation">}</span>
+ 
+<span class="token keyword">interface</span> <span class="token class-name">User</span> <span class="token punctuation">{</span>
+  sex<span class="token operator">:</span> <span class="token builtin">string</span>
+<span class="token punctuation">}</span>
+ 
+<span class="token comment">/*
+User 接口为 {
+  name: string
+  age: number
+  sex: string 
+}
+*/</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<img src="https://i.loli.net/2021/08/31/gPnaBlw8NjsOIvX.png" alt="图片" style="zoom: 50%;">
+<p>如果不知道用什么，记住：能用 interface 实现，就用 interface , 如果不能就用 type 。</p>
+<h1 id="typeof"><a class="header-anchor" href="#typeof"> </a>typeof</h1>
+<p><code>typeof</code> 操作符可以用来获取一个变量或对象的类型。</p>
+<p>我们一般先定义类型，再使用：</p>
+<pre class="line-numbers language-typescript" data-language="typescript"><code class="language-typescript"><span class="token keyword">interface</span> <span class="token class-name">Opt</span> <span class="token punctuation">{</span>
+  timeout<span class="token operator">:</span> <span class="token builtin">number</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">const</span> defaultOption<span class="token operator">:</span> Opt <span class="token operator">=</span> <span class="token punctuation">{</span>
+  timeout<span class="token operator">:</span> <span class="token number">500</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>有时候可以反过来：</p>
+<pre class="line-numbers language-typescript" data-language="typescript"><code class="language-typescript"><span class="token keyword">const</span> defaultOption <span class="token operator">=</span> <span class="token punctuation">{</span>
+  timeout<span class="token operator">:</span> <span class="token number">500</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">type</span> <span class="token class-name">Opt</span> <span class="token operator">=</span> <span class="token keyword">typeof</span> defaultOption<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+<img src="https://i.loli.net/2021/08/31/nUlfVQZMCTKLPwN.png" alt="image-20210830182310948" style="zoom: 50%;">
+<p>当一个 interface 总有一个字面量初始值时，可以考虑这种写法以减少重复代码。</p>
+<h1 id="keyof"><a class="header-anchor" href="#keyof"> </a>keyof</h1>
+<p>TypeScript 允许我们遍历某种类型的属性，并通过 <code>keyof</code> 操作符提取其属性的名称。</p>
+<p><code>keyof</code> 操作符是在 TypeScript 2.1 版本引入的，该操作符可以用于获取某种类型的所有键，其返回类型是联合类型。</p>
+<p><code>keyof</code> 与 <code>Object.keys</code> 略有相似，只不过 <code>keyof</code> 取 <code>interface</code>的键。</p>
+<pre class="line-numbers language-typescript" data-language="typescript"><code class="language-typescript"><span class="token keyword">const</span> persion <span class="token operator">=</span> <span class="token punctuation">{</span>
+  age<span class="token operator">:</span> <span class="token number">3</span><span class="token punctuation">,</span>
+  text<span class="token operator">:</span> <span class="token string">'hello world'</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">// type keys = "age" | "text"</span>
+<span class="token keyword">type</span> <span class="token class-name">keys</span> <span class="token operator">=</span> <span class="token keyword">keyof</span> Point<span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>写一个方法获取对象里面的属性值时，一般人可能会这么写</p>
+<pre class="line-numbers language-typescript" data-language="typescript"><code class="language-typescript"><span class="token keyword">const</span> person <span class="token operator">=</span> <span class="token punctuation">{</span>
+  age<span class="token operator">:</span> <span class="token number">12</span><span class="token punctuation">,</span>
+  text<span class="token operator">:</span> <span class="token string">'备注'</span>
+<span class="token punctuation">}</span>
+<span class="token keyword">function</span> <span class="token function">myGet</span><span class="token punctuation">(</span>o<span class="token operator">:</span> object<span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> o<span class="token punctuation">[</span>name<span class="token punctuation">]</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">const</span> age <span class="token operator">=</span> <span class="token function">myGet</span><span class="token punctuation">(</span>person<span class="token punctuation">,</span> <span class="token string">'age'</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> text <span class="token operator">=</span> <span class="token function">myGet</span><span class="token punctuation">(</span>person<span class="token punctuation">,</span> <span class="token string">'text'</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>但是会提示报错</p>
+<p><img src="https://i.loli.net/2021/08/31/myRYiQ3p74Mu91a.png" alt="图片"></p>
+<p>因为 object 里面没有事先声明的 key。</p>
+<p>当然如果把 <code>o: object</code> 修改为 <code>o: any</code> 就不会报错了，但是获取到的值就没有类型了，也变成 any 了。</p>
+<img src="https://i.loli.net/2021/08/31/U68CKsroZj142yI.png" alt="图片" style="zoom:50%;">
+<p>这时可以使用 <code>keyof</code> 来加强 <code>get</code> 函数的类型功能。</p>
+<pre class="line-numbers language-typescript" data-language="typescript"><code class="language-typescript"><span class="token keyword">function</span> <span class="token keyword">get</span><span class="token operator">&lt;</span><span class="token constant">T</span> <span class="token keyword">extends</span> <span class="token class-name">object</span><span class="token punctuation">,</span> <span class="token constant">K</span> <span class="token keyword">extends</span> <span class="token keyword">keyof</span> <span class="token constant">T</span><span class="token operator">&gt;</span><span class="token punctuation">(</span>o<span class="token operator">:</span> <span class="token constant">T</span><span class="token punctuation">,</span> name<span class="token operator">:</span> <span class="token constant">K</span><span class="token punctuation">)</span><span class="token operator">:</span> <span class="token constant">T</span><span class="token punctuation">[</span><span class="token constant">K</span><span class="token punctuation">]</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> o<span class="token punctuation">[</span>name<span class="token punctuation">]</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+<img src="https://i.loli.net/2021/08/31/CyLn2A1Y6ZNcqQp.png" alt="图片" style="zoom:67%;">
+<h1 id="查找类型"><a class="header-anchor" href="#查找类型"> </a>查找类型</h1>
+<pre class="line-numbers language-typescript" data-language="typescript"><code class="language-typescript"><span class="token keyword">interface</span> <span class="token class-name">Person</span> <span class="token punctuation">{</span>
+    addr<span class="token operator">:</span> <span class="token punctuation">{</span>
+        city<span class="token operator">:</span> <span class="token builtin">string</span><span class="token punctuation">,</span>
+        street<span class="token operator">:</span> <span class="token builtin">string</span><span class="token punctuation">,</span>
+        num<span class="token operator">:</span> <span class="token builtin">number</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>当需要使用 addr 的类型时，除了把类型提出来</p>
+<pre class="line-numbers language-typescript" data-language="typescript"><code class="language-typescript"><span class="token keyword">interface</span> <span class="token class-name">Address</span> <span class="token punctuation">{</span>
+    city<span class="token operator">:</span> <span class="token builtin">string</span><span class="token punctuation">,</span>
+    street<span class="token operator">:</span> <span class="token builtin">string</span><span class="token punctuation">,</span>
+    num<span class="token operator">:</span> <span class="token builtin">number</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">interface</span> <span class="token class-name">Person</span> <span class="token punctuation">{</span>
+    addr<span class="token operator">:</span> Address<span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>还可以</p>
+<pre class="line-numbers language-typescript" data-language="typescript"><code class="language-typescript">Person<span class="token punctuation">[</span><span class="token string">"addr"</span><span class="token punctuation">]</span> <span class="token comment">// This is Address.</span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>比如：</p>
+<pre class="line-numbers language-typescript" data-language="typescript"><code class="language-typescript"><span class="token keyword">interface</span> <span class="token class-name">Person</span> <span class="token punctuation">{</span>
+    addr<span class="token operator">:</span> <span class="token punctuation">{</span>
+        city<span class="token operator">:</span> <span class="token builtin">string</span><span class="token punctuation">,</span>
+        street<span class="token operator">:</span> <span class="token builtin">string</span><span class="token punctuation">,</span>
+        num<span class="token operator">:</span> <span class="token builtin">number</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">const</span> addr<span class="token operator">:</span> Person<span class="token punctuation">[</span><span class="token string">"addr"</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">{</span>
+    city<span class="token operator">:</span> <span class="token string">'string'</span><span class="token punctuation">,</span>
+    street<span class="token operator">:</span> <span class="token string">'string'</span><span class="token punctuation">,</span>
+    num<span class="token operator">:</span> <span class="token number">2</span>
+<span class="token punctuation">}</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<img src="https://i.loli.net/2021/08/31/NigLyd2jrH4VvGo.png" alt="image-20210830192141330" style="zoom:50%;">
+<p>有些场合后者会让代码更整洁、易读。</p>
+<h1 id="DeepReadonly"><a class="header-anchor" href="#DeepReadonly"> </a>DeepReadonly</h1>
+<p>被 <code>readonly</code> 标记的属性只能在声明时或类的构造函数中赋值。</p>
+<p>之后将不可改（即只读属性），否则会抛出 TS2540 错误。</p>
+<p>与 ES6 中的 <code>const</code> 很相似，但 <code>readonly</code> 只能用在类（TS 里也可以是接口）中的属性上，相当于一个只有 <code>getter</code> 没有 <code>setter</code> 的属性的语法糖。</p>
+<p>下面实现一个深度声明 <code>readonly</code> 的类型：</p>
+<pre class="line-numbers language-typescript" data-language="typescript"><code class="language-typescript"><span class="token keyword">type</span> <span class="token class-name">DeepReadonly<span class="token operator">&lt;</span><span class="token constant">T</span><span class="token operator">&gt;</span></span> <span class="token operator">=</span> <span class="token punctuation">{</span>
+  <span class="token keyword">readonly</span> <span class="token punctuation">[</span><span class="token constant">P</span> <span class="token keyword">in</span> <span class="token keyword">keyof</span> <span class="token constant">T</span><span class="token punctuation">]</span><span class="token operator">:</span> DeepReadonly<span class="token operator">&lt;</span><span class="token constant">T</span><span class="token punctuation">[</span><span class="token constant">P</span><span class="token punctuation">]</span><span class="token operator">&gt;</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">const</span> a <span class="token operator">=</span> <span class="token punctuation">{</span> foo<span class="token operator">:</span> <span class="token punctuation">{</span> bar<span class="token operator">:</span> <span class="token number">22</span> <span class="token punctuation">}</span> <span class="token punctuation">}</span>
+<span class="token keyword">const</span> b <span class="token operator">=</span> a <span class="token keyword">as</span> DeepReadonly<span class="token operator">&lt;</span><span class="token keyword">typeof</span> a<span class="token operator">&gt;</span>
+b<span class="token punctuation">.</span>foo<span class="token punctuation">.</span>bar <span class="token operator">=</span> <span class="token number">33</span> <span class="token comment">// Cannot assign to 'bar' because it is a read-only property.ts(2540)</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<img src="https://i.loli.net/2021/08/31/PoMlL2XzkDmKcr9.png" alt="image-20210830195513830" style="zoom:50%;">
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>给作者倒一杯 Java |ૂ•ᴗ•⸝⸝)</div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.jpg" alt="嘎嘎 微信">
+        <span>微信</span>
+      </div>
+
+  </div>
+</div>
+
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>嘎嘎
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="http://gagalab.tech/2021/08/30/%E6%8A%80%E6%9C%AF%E5%88%86%E4%BA%AB03-%E5%87%A0%E4%B8%AATypeScript%E5%B0%8F%E6%8A%80%E5%B7%A7/" title="技术分享03 - 几个TypeScript小技巧">http://gagalab.tech/2021/08/30/技术分享03-几个TypeScript小技巧/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E6%8A%80%E6%9C%AF%E5%88%86%E4%BA%AB/" rel="tag"># 技术分享</a>
+              <a href="/tags/TypeScript/" rel="tag"># TypeScript</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/08/23/%E6%8A%80%E6%9C%AF%E5%88%86%E4%BA%AB02-WebSocket%E5%8E%9F%E7%90%86/" rel="prev" title="技术分享02 - WebSocket 原理">
+                  <i class="fa fa-chevron-left"></i> 技术分享02 - WebSocket 原理
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/08/31/%E6%8A%80%E6%9C%AF%E5%88%86%E4%BA%AB04-Rebase/" rel="next" title="技术分享04 - Rebase">
+                  技术分享04 - Rebase <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div><script src="/js/comments.js"></script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">蜀ICP备2021017211号-1 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fas fa-carrot"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">嘎嘎</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+      <span>站点总字数：</span>
+    <span title="站点总字数">259k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span>站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">3:55</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://unpkg.com/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script>
+
+  
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{&quot;enable&quot;:true,&quot;tags&quot;:&quot;none&quot;,&quot;js&quot;:&quot;https:&#x2F;&#x2F;unpkg.com&#x2F;mathjax@3.1.2&#x2F;es5&#x2F;tex-mml-chtml.js&quot;}</script>
+<script src="/js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://unpkg.com/gitalk@1.7.2/dist/gitalk.css">
+
+<script class="next-config" data-name="gitalk" type="application/json">{&quot;enable&quot;:true,&quot;github_id&quot;:&quot;Gainii&quot;,&quot;repo&quot;:&quot;blog-comment&quot;,&quot;client_id&quot;:&quot;fcfb5b509516a117acaa&quot;,&quot;client_secret&quot;:&quot;fed028539de4e797eed5463bac8a25cf52bfeae4&quot;,&quot;admin_user&quot;:&quot;Gainii&quot;,&quot;distraction_free_mode&quot;:true,&quot;proxy&quot;:&quot;https:&#x2F;&#x2F;cors-anywhere.azm.workers.dev&#x2F;https:&#x2F;&#x2F;github.com&#x2F;login&#x2F;oauth&#x2F;access_token&quot;,&quot;language&quot;:&quot;zh-CN&quot;,&quot;js&quot;:&quot;https:&#x2F;&#x2F;unpkg.com&#x2F;gitalk@1.7.2&#x2F;dist&#x2F;gitalk.min.js&quot;,&quot;path_md5&quot;:&quot;28aff11199386338567cd49ed6e20314&quot;}</script>
+<script src="/js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>
