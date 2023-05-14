@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#eeb8c3">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="../../../../images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../../../../images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../../../../images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="../../../../images/logo.svg" color="#eeb8c3">
+  <meta name="baidu-site-verification" content="code-wvYwrV1HmI">
+
+<link rel="stylesheet" href="../../../../css/main.css">
+
+
+
+<link rel="stylesheet" href="https://unpkg.com/@fortawesome/fontawesome-free@5.15.3/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/animate.css@3.1.1/animate.min.css">
+
+<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;zzLab.tech&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Gemini&quot;,&quot;version&quot;:&quot;8.3.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:true,&quot;bookmark&quot;:{&quot;enable&quot;:true,&quot;color&quot;:&quot;#FFAFB7&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;buttons&quot;,&quot;active&quot;:&quot;gitalk&quot;,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null,&quot;activeClass&quot;:&quot;gitalk&quot;},&quot;motion&quot;:{&quot;enable&quot;:true,&quot;async&quot;:true,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;},&quot;path&quot;:&quot;&#x2F;search.xml&quot;,&quot;localsearch&quot;:{&quot;enable&quot;:true,&quot;trigger&quot;:&quot;auto&quot;,&quot;top_n_per_article&quot;:1,&quot;unescape&quot;:false,&quot;preload&quot;:false}}</script>
+<meta name="description" content="CSRF（Cross-site request forgery，跨站请求伪造）是一种利用网站可信用户的权限去执行未授权的命令的一种恶意攻击。本文较为详细地解释了何为 CSRF，有何危害，如何防范 CSRF 攻击。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="技术分享07 - CSRF攻击">
+<meta property="og:url" content="https://zzzzzzzzzzmj.github.io/zmj.github.io/2021/10/11/%E6%8A%80%E6%9C%AF%E5%88%86%E4%BA%AB07-CSRF%E6%94%BB%E5%87%BB/index.html">
+<meta property="og:site_name" content="小周研究所">
+<meta property="og:description" content="CSRF（Cross-site request forgery，跨站请求伪造）是一种利用网站可信用户的权限去执行未授权的命令的一种恶意攻击。本文较为详细地解释了何为 CSRF，有何危害，如何防范 CSRF 攻击。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-10-11T08:18:14.000Z">
+<meta property="article:modified_time" content="2021-11-01T09:44:16.000Z">
+<meta property="article:author" content="小周">
+<meta property="article:tag" content="技术分享">
+<meta property="article:tag" content="安全">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://zzzzzzzzzzmj.github.io/zmj.github.io/2021/10/11/%E6%8A%80%E6%9C%AF%E5%88%86%E4%BA%AB07-CSRF%E6%94%BB%E5%87%BB/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;http:&#x2F;&#x2F;zzLab.tech&#x2F;2021&#x2F;10&#x2F;11&#x2F;%E6%8A%80%E6%9C%AF%E5%88%86%E4%BA%AB07-CSRF%E6%94%BB%E5%87%BB&#x2F;&quot;,&quot;path&quot;:&quot;2021&#x2F;10&#x2F;11&#x2F;技术分享07-CSRF攻击&#x2F;&quot;,&quot;title&quot;:&quot;技术分享07 - CSRF攻击&quot;}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<title>技术分享07 - CSRF攻击 | 小周研究所</title><script src="../../../../js/config.js"></script>
+  
+
+  <script src="../../../../js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?e5d9d728fe85990111d542575e01e3ab"></script>
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="../../../../css/noscript.css">
+  </noscript>
+
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="../../../../" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">小周研究所</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">zzLab</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="../../../../" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-works"><a href="../../../../works/" rel="section"><i class="fa fa-trophy fa-fw"></i>作品</a></li>
+        <li class="menu-item menu-item-tags"><a href="../../../../tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li>
+        <li class="menu-item menu-item-categories"><a href="../../../../categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-archives"><a href="../../../../archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-about"><a href="../../../../about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-sitemap"><a href="../../../../sitemap.xml" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFCSRF%EF%BC%9F"><span class="nav-text">什么是CSRF？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#CSRF%E6%9C%89%E5%93%AA%E4%BA%9B%E5%8D%B1%E5%AE%B3"><span class="nav-text">CSRF有哪些危害</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%BA%A7%E7%94%9F%E5%8E%9F%E7%90%86%E4%BB%A5%E5%8F%8A%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F"><span class="nav-text">产生原理以及利用方式</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%A9%E7%94%A8%E6%96%B9%E5%BC%8F"><span class="nav-text">利用方式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#GET%E8%AF%B7%E6%B1%82%E5%88%A9%E7%94%A8"><span class="nav-text">GET请求利用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#POST%E8%AF%B7%E6%B1%82%E5%88%A9%E7%94%A8"><span class="nav-text">POST请求利用</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%98%B2%E8%8C%83%E5%8E%9F%E7%90%86"><span class="nav-text">防范原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%98%B2%E8%8C%83%E6%8A%80%E6%9C%AF"><span class="nav-text">防范技术</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Synchronizer-token-pattern"><span class="nav-text">Synchronizer token pattern</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Cookie-to-Header-Token"><span class="nav-text">Cookie-to-Header Token</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%AA%8C%E8%AF%81%E7%A0%81"><span class="nav-text">验证码</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <a href="../../../../about/">
+    <img class="site-author-image" itemprop="image" alt="小周"
+      src="../../../../images/avatar.png">
+  <p class="site-author-name" itemprop="name">小周</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="../../../../archives/">
+        
+          <span class="site-state-item-count">26</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="../../../../categories/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="../../../../tags/">
+          
+        <span class="site-state-item-count">26</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zzzzzzzzzzmj" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zzzzzzzzzzmj" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:2514071662@qq.com" title="E-Mail → mailto:2514071662@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/zmj251407" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;zmj251407" rel="noopener" target="_blank"><i class="fab fa-codiepie fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zzzzzzzzzzmj.github.io/zmj.github.io/2021/10/11/%E6%8A%80%E6%9C%AF%E5%88%86%E4%BA%AB07-CSRF%E6%94%BB%E5%87%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="./images/avatar.png">
+      <meta itemprop="name" content="小周">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小周研究所">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          技术分享07 - CSRF攻击
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+
+  
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-10-11 16:18:14" itemprop="dateCreated datePublished" datetime="2021-10-11T16:18:14+08:00">2021-10-11</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-11-01 17:44:16" itemprop="dateModified" datetime="2021-11-01T17:44:16+08:00">2021-11-01</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="../../../../categories/%E5%AE%89%E5%85%A8/" itemprop="url" rel="index"><span itemprop="name">安全</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>3.5k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>3 分钟</span>
+    </span>
+</div>
+
+            <div class="post-description">CSRF（Cross-site request forgery，跨站请求伪造）是一种利用网站可信用户的权限去执行未授权的命令的一种恶意攻击。本文较为详细地解释了何为 CSRF，有何危害，如何防范 CSRF 攻击。</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p>CSRF（Cross-site request forgery，中文为<strong>跨站请求伪造</strong>）是一种利用网站可信用户的权限去执行未授权的命令的一种恶意攻击。通过<strong>伪装可信用户的请求来利用信任该用户的网站</strong>，这种攻击方式虽然不是很流行，但是却难以防范，其危害也不比其他安全漏洞小。</p>
+<blockquote>
+<p>CSRF也称作<strong>one-click attack</strong>或者<strong>session riding</strong>，其简写有时候也会使用<strong>XSRF</strong>。</p>
+</blockquote>
+<h1 id="什么是CSRF？"><a class="header-anchor" href="#什么是CSRF？"> </a>什么是CSRF？</h1>
+<p>简单点说，CSRF攻击就是 <strong>攻击者利用受害者的身份，以受害者的名义发送恶意请求</strong>。</p>
+<blockquote>
+<p><strong>与XSS（Cross-site scripting，跨站脚本攻击）不同的是，XSS的目的是获取用户的身份信息，攻击者窃取到的是用户的身份（session/cookie），而CSRF则是利用用户当前的身份去做一些未经过授权的操作。</strong></p>
+</blockquote>
+<p>CSRF攻击最早在2001年被发现，由于它的请求是从用户的IP地址发起的，因此在服务器上的web日志中可能无法检测到是否受到了CSRF攻击，正是由于它的这种隐蔽性，很长时间以来都没有被公开的报告出来，直到2007年才真正的被人们所重视。</p>
+<h1 id="CSRF有哪些危害"><a class="header-anchor" href="#CSRF有哪些危害"> </a>CSRF有哪些危害</h1>
+<p>CSRF可以盗用受害者的身份，完成受害者在web浏览器有权限进行的任何操作，想想吧，能做的事情太多了。</p>
+<ul>
+<li>以你的名义发送诈骗邮件，消息</li>
+<li>用你的账号购买商品</li>
+<li>用你的名义完成虚拟货币转账</li>
+<li>泄露个人隐私</li>
+<li>…</li>
+</ul>
+<h1 id="产生原理以及利用方式"><a class="header-anchor" href="#产生原理以及利用方式"> </a>产生原理以及利用方式</h1>
+<p>要完成一个CSRF攻击，必须具备以下几个条件：</p>
+<ul>
+<li>受害者已经登录到了目标网站（你的网站）并且没有退出</li>
+<li>受害者有意或者无意的访问了攻击者发布的页面或者链接地址</li>
+</ul>
+<p>整个步骤大致是这个样子的：</p>
+<ol>
+<li>用户小明在你的网站A上面登录了，A返回了一个session ID（使用cookie存储）</li>
+<li>小明的浏览器保持着在A网站的登录状态，事实上几乎所有的网站都是这样做的，一般至少是用户关闭浏览器之前用户的会话是不会结束的</li>
+<li>攻击者小强给小明发送了一个链接地址，小明打开了这个地址，查看了网页的内容</li>
+<li>小明在打开这个地址的时候，这个页面已经自动的对网站A发送了一个请求，这时候因为A网站没有退出，因此只要请求的地址是A的就会携带A的cookie信息，也就是使用A与小明之间的会话</li>
+<li>这时候A网站肯定是不知道这个请求其实是小强伪造的网页上发送的，而是误以为小明就是要这样操作，这样小强就可以随意的更改小明在A上的信息，以小明的身份在A网站上进行操作</li>
+</ol>
+<h2 id="利用方式"><a class="header-anchor" href="#利用方式"> </a>利用方式</h2>
+<p>利用CSRF攻击，主要包含两种方式，一种是基于GET请求方式的利用，另一种是基于POST请求方式的利用。</p>
+<h3 id="GET请求利用"><a class="header-anchor" href="#GET请求利用"> </a>GET请求利用</h3>
+<p>使用GET请求方式的利用是最简单的一种利用方式，其隐患的来源主要是由于在开发系统的时候没有按照HTTP动词的正确使用方式来使用造成的。<strong>对于GET请求来说，它所发起的请求应该是只读的，不允许对网站的任何内容进行修改</strong>。</p>
+<p>但是事实上并不是如此，很多网站在开发的时候，<strong>研发人员错误的认为GET/POST的使用区别</strong>仅仅是在于发送请求的数据是在Body中还是在请求地址中，以及请求内容的大小不同。<strong>对于一些危险的操作比如删除文章，用户授权等允许使用GET方式发送请求，在请求参数中加上文章或者用户的ID，这样就造成了只要请求地址被调用，数据就会产生修改。</strong></p>
+<p>现在假设攻击者（用户ID=121）想将自己的身份添加为网站的管理员，他在网站A上面发了一个帖子，里面包含一张图片，其地址为http://a.com/user/grant_super_user/121</p>
+<pre class="line-numbers language-none"><code class="language-none">&lt;img src="http://a.com/user/grant_super_user/121" /&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>设想管理员看到这个帖子的时候，这个图片肯定会自动加载显示的。于是在管理员不知情的情况下，一个赋予用户管理员权限的操作已经悄悄的以他的身份执行了。这时候攻击者121就获取到了网站的管理员权限。</p>
+<h3 id="POST请求利用"><a class="header-anchor" href="#POST请求利用"> </a>POST请求利用</h3>
+<p>相对于GET方式的利用，POST方式的利用更加复杂一些，难度也大了一些。攻击者需要伪造一个能够自动提交的表单来发送POST请求。</p>
+<pre class="line-numbers language-none"><code class="language-none">&lt;script&gt;
+
+$(function() {
+
+    $('#CSRF_forCSRFm').trigger('submit');
+
+});
+
+&lt;/script&gt;
+
+&lt;form action="http://a.com/user/grant_super_user" id="CSRF_form" method="post"&gt;
+
+    &lt;input name="uid" value="121" type="hidden"&gt;
+
+&lt;/form&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>只要想办法实现用户访问的时候自动提交表单就可以了。</p>
+<h1 id="防范原理"><a class="header-anchor" href="#防范原理"> </a>防范原理</h1>
+<p>防范CSRF攻击，其实本质就是要求网站<strong>能够识别出哪些请求是非正常用户主动发起的</strong>。这就要求我们<strong>在请求中嵌入一些额外的授权数据，让网站服务器能够区分出这些未授权的请求</strong>，比如说在请求参数中添加一个字段，这个字段的值从登录用户的Cookie或者页面中获取的（这个字段的值必须对每个用户来说是随机的，不能有规律可循）。攻击者伪造请求的时候是无法获取页面中与登录用户有关的一个随机值或者用户当前cookie中的内容的，因此就可以避免这种攻击。</p>
+<h2 id="防范技术"><a class="header-anchor" href="#防范技术"> </a>防范技术</h2>
+<h3 id="Synchronizer-token-pattern"><a class="header-anchor" href="#Synchronizer-token-pattern"> </a>Synchronizer token pattern</h3>
+<p>**令牌同步模式（Synchronizer token pattern，简称STP）**是在用户请求的页面中的所有表单中嵌入一个token，在服务端验证这个token的技术。token可以是任意的内容，但是一定要保证无法被攻击者猜测到或者查询到。攻击者在请求中无法使用正确的token，因此可以判断出未授权的请求。</p>
+<p><strong>简单实现STP</strong>：</p>
+<p>首先在index.php中，创建一个表单，在表单中，<strong>我们将session中存储的token放入到隐藏域</strong>，这样，表单提交的时候token会随表单一起提交</p>
+<pre class="line-numbers language-none"><code class="language-none">&lt;?php
+
+    $token = sha1(uniqid(rand(), true));
+
+    $_SESSION['token'] = $token;
+
+?&gt;
+
+&lt;form action="buy.php" method="post"&gt;
+
+    &lt;input type="hidden" name="token" value="&lt;?=$token; ?&gt;" /&gt;
+
+    ... 表单内容
+
+&lt;/form&gt;<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>在服务端校验请求参数的buy.php中，对表单提交过来的token与session中存储的token进行比对，如果一致说明token是有效的</p>
+<pre class="line-numbers language-none"><code class="language-none">if ($_POST['token'] != $_SESSION['token']) {
+
+    // TOKEN无效
+
+    throw new \Exception('Token无效，请求为伪造请求');
+
+}
+
+// TOKEN有效，表单内容处理<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>对于攻击者来说，在伪造请求的时候是无法获取到用户页面中的这个token值的，因此就可以识别出其创建的伪造请求。</p>
+<h3 id="Cookie-to-Header-Token"><a class="header-anchor" href="#Cookie-to-Header-Token"> </a>Cookie-to-Header Token</h3>
+<p>对于使用Js作为主要交互技术的网站，<strong>将CSRF的token写入到cookie中</strong></p>
+<pre class="line-numbers language-none"><code class="language-none">Set-Cookie: CSRF-token=i8XNjC4b8KVok4uw5RftR38Wgp2BFwql; expires=Thu, 23-Jul-2015 10:25:33 GMT; Max-Age=31449600; Path=/<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>然后使用javascript读取token的值，在发送http请求的时候将其作为请求的header</p>
+<pre class="line-numbers language-none"><code class="language-none">X-CSRF-Token: i8XNjC4b8KVok4uw5RftR38Wgp2BFwql<span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>最后服务器验证请求头中的token是否合法。</p>
+<h3 id="验证码"><a class="header-anchor" href="#验证码"> </a>验证码</h3>
+<p><strong>使用验证码可以杜绝CSRF攻击</strong>，但是这种方式要求每个请求都输入一个验证码，显然没有哪个网站愿意使用这种粗暴的方式，用户体验太差，用户会疯掉的。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>给作者倒一杯 Java |ૂ•ᴗ•⸝⸝)</div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="../../../../images/wechatpay.jpg" alt="小周 微信">
+        <span>微信</span>
+      </div>
+
+  </div>
+</div>
+
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>小周
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://zzzzzzzzzzmj.github.io/zmj.github.io/2021/10/11/%E6%8A%80%E6%9C%AF%E5%88%86%E4%BA%AB07-CSRF%E6%94%BB%E5%87%BB/" title="技术分享07 - CSRF攻击">https://zzzzzzzzzzmj.github.io/zmj.github.io/2021/10/11/技术分享07-CSRF攻击/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="../../../../tags/%E6%8A%80%E6%9C%AF%E5%88%86%E4%BA%AB/" rel="tag"># 技术分享</a>
+              <a href="../../../../tags/%E5%AE%89%E5%85%A8/" rel="tag"># 安全</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="../../../../2021/09/22/Chromium%E5%A4%9A%E8%BF%9B%E7%A8%8B%E6%A8%A1%E5%9E%8B/" rel="prev" title="技术分享06-Chromium多进程模型">
+                  <i class="fa fa-chevron-left"></i> 技术分享06-Chromium多进程模型
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="../../../../2021/10/20/%E6%8A%80%E6%9C%AF%E5%88%86%E4%BA%AB08-%E5%89%8D%E7%BC%80%E6%A0%91/" rel="next" title="技术分享08 - 前缀树">
+                  技术分享08 - 前缀树 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments gitalk-container"></div><script src="../../../../js/comments.js"></script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian">
+  </div>
+
+<div class="copyright">
+  &copy; 2020 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fas fa-carrot"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小周</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+      <span>站点总字数：</span>
+    <span title="站点总字数">259k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span>站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">3:55</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://unpkg.com/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="../../../../js/utils.js"></script><script src="../../../../js/motion.js"></script><script src="../../../../js/next-boot.js"></script><script src="../../../../js/bookmark.js"></script>
+
+  
+<script src="../../../../js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{&quot;enable&quot;:true,&quot;tags&quot;:&quot;none&quot;,&quot;js&quot;:&quot;https:&#x2F;&#x2F;unpkg.com&#x2F;mathjax@3.1.2&#x2F;es5&#x2F;tex-mml-chtml.js&quot;}</script>
+<script src="../../../../js/third-party/math/mathjax.js"></script>
+
+
+<link rel="stylesheet" href="https://unpkg.com/gitalk@1.7.2/dist/gitalk.css">
+
+<script class="next-config" data-name="gitalk" type="application/json">{&quot;enable&quot;:true,&quot;github_id&quot;:&quot;zzzzzzzzzzmj&quot;,&quot;repo&quot;:&quot;blog-comment&quot;,&quot;client_id&quot;:&quot;fcfb5b509516a117acaa&quot;,&quot;client_secret&quot;:&quot;fed028539de4e797eed5463bac8a25cf52bfeae4&quot;,&quot;admin_user&quot;:&quot;zzzzzzzzzzmj&quot;,&quot;distraction_free_mode&quot;:true,&quot;proxy&quot;:&quot;https:&#x2F;&#x2F;cors-anywhere.azm.workers.dev&#x2F;https:&#x2F;&#x2F;github.com&#x2F;login&#x2F;oauth&#x2F;access_token&quot;,&quot;language&quot;:&quot;zh-CN&quot;,&quot;js&quot;:&quot;https:&#x2F;&#x2F;unpkg.com&#x2F;gitalk@1.7.2&#x2F;dist&#x2F;gitalk.min.js&quot;,&quot;path_md5&quot;:&quot;e81c6863aaa8fbdf546ead97ad246035&quot;}</script>
+<script src="../../../../js/third-party/comments/gitalk.js"></script>
+
+</body>
+</html>
