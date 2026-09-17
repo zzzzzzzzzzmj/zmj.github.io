@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#4f6f86">
+<meta name="generator" content="Hexo 5.4.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="../../../../images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="../../../../images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="../../../../images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="../../../../images/logo.svg" color="#4f6f86">
+  <meta name="baidu-site-verification" content="code-wvYwrV1HmI">
+
+<link rel="stylesheet" href="../../../../css/main.css">
+
+
+
+<link rel="stylesheet" href="https://unpkg.com/@fortawesome/fontawesome-free@5.15.3/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/animate.css@3.1.1/animate.min.css">
+
+<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;zzLab.tech&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Gemini&quot;,&quot;version&quot;:&quot;8.3.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:true,&quot;bookmark&quot;:{&quot;enable&quot;:true,&quot;color&quot;:&quot;#607d94&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;motion&quot;:{&quot;enable&quot;:true,&quot;async&quot;:true,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;},&quot;path&quot;:&quot;&#x2F;search.xml&quot;,&quot;localsearch&quot;:{&quot;enable&quot;:true,&quot;trigger&quot;:&quot;auto&quot;,&quot;top_n_per_article&quot;:1,&quot;unescape&quot;:false,&quot;preload&quot;:false}}</script>
+<meta name="description" content="本文以 Next 主题为例，手把手教你如何在 Hexo 个人博客中使用 Github 贡献日历。除此之外，你当然也可以在任何地方使用它。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="手把手教你在Hexo中使用Github贡献日历（以Next主题为例）">
+<meta property="og:url" content="https://zzzzzzzzzzmj.github.io/zmj.github.io/2023/01/14/Next%E4%B8%BB%E9%A2%98%E4%BD%BF%E7%94%A8Github%E8%B4%A1%E7%8C%AE%E6%97%A5%E5%8E%86%E6%95%99%E7%A8%8B/index.html">
+<meta property="og:site_name" content="小周研究所">
+<meta property="og:description" content="本文以 Next 主题为例，手把手教你如何在 Hexo 个人博客中使用 Github 贡献日历。除此之外，你当然也可以在任何地方使用它。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://img-blog.csdnimg.cn/20210714211823720.png">
+<meta property="og:image" content="https://i.loli.net/2021/07/14/SkvfZVcC1RdUazy.png">
+<meta property="og:image" content="https://i.loli.net/2021/07/14/c3YE5OrWsTMKvnj.png">
+<meta property="og:image" content="https://ghchart.rshah.org/409ba5/zzzzzzzzzzmj">
+<meta property="og:image" content="https://i.loli.net/2021/07/14/gkOJsnQHBAZ4bNY.png">
+<meta property="og:image" content="https://i.loli.net/2021/07/14/fKGS7puCMB6eUcT.png">
+<meta property="og:image" content="https://i.loli.net/2021/07/14/NI71t4XqQ3uYG6w.png">
+<meta property="og:image" content="https://i.loli.net/2021/07/14/YBlDadXzsfWH36Z.png">
+<meta property="article:published_time" content="2023-01-14T11:09:46.000Z">
+<meta property="article:modified_time" content="2023-01-14T13:30:46.000Z">
+<meta property="article:author" content="小周">
+<meta property="article:tag" content="原创">
+<meta property="article:tag" content="Hexo博客">
+<meta property="article:tag" content="教程">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img-blog.csdnimg.cn/20210714211823720.png">
+
+
+<link rel="canonical" href="https://zzzzzzzzzzmj.github.io/zmj.github.io/2023/01/14/Next%E4%B8%BB%E9%A2%98%E4%BD%BF%E7%94%A8Github%E8%B4%A1%E7%8C%AE%E6%97%A5%E5%8E%86%E6%95%99%E7%A8%8B/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:false,&quot;permalink&quot;:&quot;http:&#x2F;&#x2F;zzLab.tech&#x2F;2023&#x2F;01&#x2F;14&#x2F;Next%E4%B8%BB%E9%A2%98%E4%BD%BF%E7%94%A8Github%E8%B4%A1%E7%8C%AE%E6%97%A5%E5%8E%86%E6%95%99%E7%A8%8B&#x2F;&quot;,&quot;path&quot;:&quot;2023&#x2F;01&#x2F;14&#x2F;Next主题使用Github贡献日历教程&#x2F;&quot;,&quot;title&quot;:&quot;手把手教你在Hexo中使用Github贡献日历（以Next主题为例）&quot;}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<title>手把手教你在Hexo中使用Github贡献日历（以Next主题为例） | 小周研究所</title><script src="../../../../js/config.js"></script>
+  
+
+  <script src="../../../../js/third-party/analytics/baidu-analytics.js"></script>
+  <script async src="https://hm.baidu.com/hm.js?e5d9d728fe85990111d542575e01e3ab"></script>
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="../../../../css/noscript.css">
+  </noscript>
+
+<style>.github-emoji { position: relative; display: inline-block; width: 1.2em; min-height: 1.2em; overflow: hidden; vertical-align: top; color: transparent; }  .github-emoji > span { position: relative; z-index: 10; }  .github-emoji img, .github-emoji .fancybox { margin: 0 !important; padding: 0 !important; border: none !important; outline: none !important; text-decoration: none !important; user-select: none !important; cursor: auto !important; }  .github-emoji img { height: 1.2em !important; width: 1.2em !important; position: absolute !important; left: 50% !important; top: 50% !important; transform: translate(-50%, -50%) !important; user-select: none !important; cursor: auto !important; } .github-emoji-fallback { color: inherit; } .github-emoji-fallback img { opacity: 0 !important; }</style>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="../../../../" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">小周研究所</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">zzLab</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu">
+        <li class="menu-item menu-item-home"><a href="../../../../" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li>
+        <li class="menu-item menu-item-categories"><a href="../../../../categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li>
+        <li class="menu-item menu-item-archives"><a href="../../../../archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+        <li class="menu-item menu-item-about"><a href="../../../../about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li>
+        <li class="menu-item menu-item-sitemap"><a href="../../../../sitemap.html" rel="section"><i class="fa fa-sitemap fa-fw"></i>站点地图</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%B5%B7%E5%9B%A0"><span class="nav-text">起因</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%8E%B0%E5%9C%A8%E5%BC%80%E5%A7%8B%EF%BC%81"><span class="nav-text">现在开始！</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%9C%80%E7%AE%80%E5%8D%95%E7%9A%84%E6%96%B9%E6%B3%95"><span class="nav-text">最简单的方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E8%B4%A1%E7%8C%AE%E6%97%A5%E5%8E%86%E7%9A%84%E9%85%8D%E8%89%B2%E6%96%B9%E6%A1%88"><span class="nav-text">自定义贡献日历的配色方案</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%94%BE%E8%BF%9B%E9%A6%96%E9%A1%B5%E5%92%8C%E5%BD%92%E6%A1%A3%E9%A1%B5%EF%BC%88%E4%BB%A5Next%E4%B8%BB%E9%A2%98%E4%B8%BA%E4%BE%8B%EF%BC%89"><span class="nav-text">放进首页和归档页（以Next主题为例）</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E2%9A%A0%EF%B8%8F-%E6%B3%A8%E6%84%8F"><span class="nav-text">⚠️ 注意</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%9C%80%E7%BB%88%E6%95%88%E6%9E%9C"><span class="nav-text">最终效果</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <a href="../../../../about/">
+    <img class="site-author-image" itemprop="image" alt="小周"
+      src="../../../../images/avatar.png">
+  <p class="site-author-name" itemprop="name">小周</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="../../../../archives/">
+        
+          <span class="site-state-item-count">26</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="../../../../categories/">
+          
+        <span class="site-state-item-count">14</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/zzzzzzzzzzmj" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;zzzzzzzzzzmj" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:2514071662@qq.com" title="E-Mail → mailto:2514071662@qq.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="https://blog.csdn.net/zmj251407" title="CSDN → https:&#x2F;&#x2F;blog.csdn.net&#x2F;zmj251407" rel="noopener" target="_blank"><i class="fab fa-codiepie fa-fw"></i>CSDN</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+      
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://zzzzzzzzzzmj.github.io/zmj.github.io/2023/01/14/Next%E4%B8%BB%E9%A2%98%E4%BD%BF%E7%94%A8Github%E8%B4%A1%E7%8C%AE%E6%97%A5%E5%8E%86%E6%95%99%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="./images/avatar.png">
+      <meta itemprop="name" content="小周">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="小周研究所">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          手把手教你在Hexo中使用Github贡献日历（以Next主题为例）
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+
+  
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2023-01-14 19:09:46 / 修改时间：21:30:46" itemprop="dateCreated datePublished" datetime="2023-01-14T19:09:46+08:00">2023-01-14</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="../../../../categories/%E6%95%99%E7%A8%8B/" itemprop="url" rel="index"><span itemprop="name">教程</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+      </div>
+      <div class="post-meta">
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>2.3k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+            <div class="post-description">本文以 Next 主题为例，手把手教你如何在 Hexo 个人博客中使用 Github 贡献日历。除此之外，你当然也可以在任何地方使用它。</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="起因"><a class="header-anchor" href="#起因"> </a>起因</h1>
+<p><strong>以下都是废话，可以直接跳到下一节~</strong></p>
+<p>其实，我对能够将 Github 贡献日历（Contribution Calendar）放进自己的博客这件事，早就垂涎久矣。当初尝试了各种<a target="_blank" rel="noopener" href="https://www.freesion.com/article/7086773921/">方法</a>，都没有能够在我的 Next 主题上实现，得知 <a target="_blank" rel="noopener" href="https://gitee.com/cungudafa/hexo-theme-sakuraplus">sakuraplus主题</a> 已经融合了这个功能实在是羡慕。</p>
+<p>最近准备校招，压力有些大，不想学习，就开始琢磨着折腾一下自己的博客，妄想能给面试官留个特别的印象（bushi）。今天，打开 Github 看见贡献日历，又动了试试看的念头。百度一下，发现了<a target="_blank" rel="noopener" href="https://zfe.space/">小冰</a>大神写的 hexo-githubcalendar 插件，他实现的效果实在是太棒了，引入方法也很简单，而且很多主题都能使用。</p>
+<img src="https://img-blog.csdnimg.cn/20210714211823720.png" alt="小冰的插件效果" style="zoom: 67%;">
+<p>但是，我按照他的<a target="_blank" rel="noopener" href="https://zfe.space/post/hexo-githubcalendar.html">教程</a>一步步做了，却总是显示不出。于是，我在 Github <a target="_blank" rel="noopener" href="https://github.com/Zfour">Zfour</a>/<a target="_blank" rel="noopener" href="https://github.com/Zfour/hexo-github-calendar">hexo-github-calendar</a> 中的 <a target="_blank" rel="noopener" href="https://github.com/Zfour/hexo-github-calendar/issues/10">Next theme Issue</a> 下，看见了<a target="_blank" rel="noopener" href="https://github.com/aixiu">叶叶菜</a>的回复，试图和他取得联系，问问他是怎么做的。很幸运，叶叶菜不久就加了我 QQ，他说，他嫌麻烦没有用这个插件，并且热心地推荐了一个<a target="_blank" rel="noopener" href="https://www.rshah.org/">老外</a>实现的方法。</p>
+<p>Github 地址：<a target="_blank" rel="noopener" href="https://github.com/2016rshah/githubchart-api">https://github.com/2016rshah/githubchart-api</a></p>
+<p><strong>这个方法最绝的地方是，将你自己的贡献日历变成了图片，只需要使用一行 HTML 语句，就可以在任何地方使用贡献日历。</strong></p>
+<pre class="line-numbers language-html" data-language="html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>img</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>https://ghchart.rshah.org/2016rshah<span class="token punctuation">"</span></span> <span class="token attr-name">alt</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>2016rshah<span class="token punctuation">'</span>s Github chart<span class="token punctuation">"</span></span> <span class="token punctuation">/&gt;</span></span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p><strong>但缺点是，不像小冰的插件那样可以显示上传日期以及提交次数等等。</strong></p>
+<h1 id="现在开始！"><a class="header-anchor" href="#现在开始！"> </a>现在开始！</h1>
+<p><strong>此方法的 Github 地址：<a target="_blank" rel="noopener" href="https://github.com/2016rshah/githubchart-api">https://github.com/2016rshah/githubchart-api</a></strong></p>
+<h2 id="最简单的方法"><a class="header-anchor" href="#最简单的方法"> </a>最简单的方法</h2>
+<p>如果你想以最简单方法使用贡献日历，那么只需要在你的 Markdown 文本中，使用：</p>
+<pre class="line-numbers language-html" data-language="html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>img</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>https://ghchart.rshah.org/你的Github用户名<span class="token punctuation">"</span></span> <span class="token attr-name">alt</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>???<span class="token punctuation">'</span>s Github chart<span class="token punctuation">"</span></span> <span class="token punctuation">/&gt;</span></span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>例如，若你想在“关于”页面使用贡献日历，那么可以在 <code>Blog\source\about</code> 目录下，打开 <code>index.md</code>，在需要的位置插入上面的语句即可。</p>
+<img src="https://i.loli.net/2021/07/14/SkvfZVcC1RdUazy.png" alt="示例" style="zoom: 50%;">
+<p>注意，要使用自己的 Github 用户名哦！</p>
+<p>效果如下：</p>
+<img src="https://i.loli.net/2021/07/14/c3YE5OrWsTMKvnj.png" alt="image-20210714201121590" style="zoom:50%;">
+<h2 id="自定义贡献日历的配色方案"><a class="header-anchor" href="#自定义贡献日历的配色方案"> </a>自定义贡献日历的配色方案</h2>
+<p>这个方法的作者很贴心地允许我们自定义贡献日历的配色方案。</p>
+<p>我们只需要将 <code>src</code> 属性改为 <code>https://ghchart.rshah.org/&lt;HEX-COLOR&gt;/你的Github用户名</code>，其中 <code>&lt;HEX_COLOR&gt;</code> 为任意的十六进制颜色代码。它将根据这个颜色，自动为日历修改配色。</p>
+<p>完整语句如下：</p>
+<pre class="line-numbers language-html" data-language="html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>img</span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>https://ghchart.rshah.org/409ba5/你的Github用户名<span class="token punctuation">"</span></span> <span class="token attr-name">alt</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>???<span class="token punctuation">'</span>s Blue Github Chart<span class="token punctuation">"</span></span> <span class="token punctuation">/&gt;</span></span><span aria-hidden="true" class="line-numbers-rows"><span></span></span></code></pre>
+<p>效果图：</p>
+<img src="https://ghchart.rshah.org/409ba5/zzzzzzzzzzmj" alt="zzzzzzzzzzmj's Blue Github Chart">
+<h1 id="放进首页和归档页（以Next主题为例）"><a class="header-anchor" href="#放进首页和归档页（以Next主题为例）"> </a>放进首页和归档页（以Next主题为例）</h1>
+<p>首先，打开 <code>Blog\themes\next\layout</code> 目录下的 <code>_layout.njk</code> 文件。</p>
+<p>找到 <code>{%- include '_partials/header/sub-menu.njk' -%}</code>，在这条 twig 语句下方添加如下代码：</p>
+<pre class="line-numbers language-twig" data-language="twig"><code class="language-twig"><span class="token tag"><span class="token ld"><span class="token punctuation">{%-</span> <span class="token keyword">if</span></span> <span class="token property">page</span><span class="token punctuation">.</span><span class="token property">type</span> <span class="token operator">!=</span><span class="token operator">=</span> <span class="token string"><span class="token punctuation">'</span>categories<span class="token punctuation">'</span></span> <span class="token operator">and</span> <span class="token property">page</span><span class="token punctuation">.</span><span class="token property">type</span> <span class="token operator">!=</span><span class="token operator">=</span> <span class="token string"><span class="token punctuation">'</span>tags<span class="token punctuation">'</span></span> <span class="token operator">and</span> <span class="token property">page</span><span class="token punctuation">.</span><span class="token property">type</span> <span class="token operator">!=</span><span class="token operator">=</span> <span class="token string"><span class="token punctuation">'</span>schedule<span class="token punctuation">'</span></span> <span class="token operator">and</span> <span class="token property">page</span><span class="token punctuation">.</span><span class="token property">type</span> <span class="token operator">!=</span><span class="token operator">=</span> <span class="token string"><span class="token punctuation">'</span>works<span class="token punctuation">'</span></span> <span class="token operator">and</span> <span class="token property">page</span><span class="token punctuation">.</span><span class="token property">type</span> <span class="token operator">!=</span><span class="token operator">=</span> <span class="token string"><span class="token punctuation">'</span>about<span class="token punctuation">'</span></span> <span class="token operator">and</span> <span class="token property">page</span><span class="token punctuation">.</span><span class="token property">type</span> <span class="token operator">!=</span><span class="token operator">=</span> <span class="token string"><span class="token punctuation">'</span>post<span class="token punctuation">'</span></span><span class="token rd"><span class="token punctuation">%}</span></span></span>
+	<span class="token other"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>post-block animated fadeIn<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+		<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>h5</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>post-title<span class="token punctuation">"</span></span> <span class="token attr-name">itemprop</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>name headline<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+			<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>a</span> <span class="token attr-name">href</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>https://github.com/你的Github用户名<span class="token punctuation">"</span></span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>post-title-link<span class="token punctuation">"</span></span> <span class="token attr-name">itemprop</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>url<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>Github Contribution Calendar<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>a</span><span class="token punctuation">&gt;</span></span>
+		<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>h5</span><span class="token punctuation">&gt;</span></span>
+		<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>div</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>post-body animated fadeInDown<span class="token punctuation">"</span></span> <span class="token attr-name">itemprop</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>articleBody<span class="token punctuation">"</span></span><span class="token punctuation">&gt;</span></span>
+			<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>img</span> <span class="token style-attr"><span class="token attr-name">style</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span><span class="token style language-css"><span class="token property">width</span><span class="token punctuation">:</span> 100%<span class="token punctuation">;</span> <span class="token property">margin-top</span><span class="token punctuation">:</span> 30px<span class="token punctuation">;</span></span><span class="token punctuation">"</span></span></span> <span class="token attr-name">src</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>https://ghchart.rshah.org/e77c8e/你的Github用户名<span class="token punctuation">"</span></span> <span class="token attr-name">alt</span><span class="token attr-value"><span class="token punctuation attr-equals">=</span><span class="token punctuation">"</span>???<span class="token punctuation">'</span>s Blue Github Chart<span class="token punctuation">"</span></span> <span class="token punctuation">/&gt;</span></span>
+		<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span>
+	<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>div</span><span class="token punctuation">&gt;</span></span></span>
+<span class="token tag"><span class="token ld"><span class="token punctuation">{%-</span> <span class="token keyword">endif</span></span> <span class="token rd"><span class="token punctuation">%}</span></span></span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+<p>我的代码：</p>
+<p><img src="https://i.loli.net/2021/07/14/gkOJsnQHBAZ4bNY.png" alt="image-20210714202715120"></p>
+<h2 id="⚠️-注意"><a class="header-anchor" href="#⚠️-注意"> </a>⚠️ 注意</h2>
+<p>☝️<strong>第一，要把<span style="color: orange;">黄色框框</span>里面的代码换成你的信息！</strong></p>
+<p>✌️<strong>第二，<span style="color: green;">绿色框框</span>要根据你博客的情况写。</strong></p>
+<p>其中，<code>page.type</code> 是在对应页面的 <code>index.md</code> 文件的首部设置的，语句为 <code>type: "对应类型"</code>。</p>
+<p><strong>以 about 页面为例</strong>，<code>page.type</code>在 <code>Blog\source\about</code> 目录下的 <code>index.md</code> 文件的首部添加 <code>type: "about"</code>，如下：</p>
+<p><img src="https://i.loli.net/2021/07/14/fKGS7puCMB6eUcT.png" alt="image-20210714204150830"></p>
+<p><strong>因此，如果你不想在你的每篇文章顶部都显示贡献日历，那么你将不得不在每篇文章的 Markdown 文件首部都添加 <code>type: "post"</code>。</strong></p>
+<p>没错，我也觉得很麻烦，如果你有更好的办法，请告诉我！😋</p>
+<p>另外，如果你想让贡献日历显示在 about 页面，只需要将 <code>page.type !== 'about'</code> 删掉即可。</p>
+<h1 id="最终效果"><a class="header-anchor" href="#最终效果"> </a>最终效果</h1>
+<p>首页的效果如下：</p>
+<img src="https://i.loli.net/2021/07/14/NI71t4XqQ3uYG6w.png" alt="image-20210714203427808" style="zoom:50%;">
+<p>归档页效果如下：</p>
+<img src="https://i.loli.net/2021/07/14/YBlDadXzsfWH36Z.png" alt="image-20210714203456597" style="zoom:50%;">
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>给作者倒一杯 Java |ૂ•ᴗ•⸝⸝)</div>
+  <button onclick="document.querySelector('.post-reward').classList.toggle('active');">
+    赞赏
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="../../../../images/wechatpay.jpg" alt="小周 微信">
+        <span>微信</span>
+      </div>
+
+  </div>
+</div>
+
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>小周
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://zzzzzzzzzzmj.github.io/zmj.github.io/2023/01/14/Next%E4%B8%BB%E9%A2%98%E4%BD%BF%E7%94%A8Github%E8%B4%A1%E7%8C%AE%E6%97%A5%E5%8E%86%E6%95%99%E7%A8%8B/" title="手把手教你在Hexo中使用Github贡献日历（以Next主题为例）">https://zzzzzzzzzzmj.github.io/zmj.github.io/2023/01/14/Next主题使用Github贡献日历教程/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="../../../../2022/12/24/%E7%AE%80%E5%8D%95%E4%BB%8B%E7%BB%8DV8%E5%BC%95%E6%93%8E/" rel="prev" title="简单介绍V8引擎">
+                  <i class="fa fa-chevron-left"></i> 简单介绍V8引擎
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="../../../../2023/01/27/%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F%E5%BA%95%E5%B1%82%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86/" rel="next" title="微信小程序底层实现原理">
+                  微信小程序底层实现原理 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian">
+  </div>
+
+<div class="copyright">
+  &copy; 2021 – 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fas fa-carrot"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">小周</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+      <span>站点总字数：</span>
+    <span title="站点总字数">259k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+      <span>站点阅读时长 &asymp;</span>
+    <span title="站点阅读时长">3:55</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://unpkg.com/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="../../../../js/utils.js"></script><script src="../../../../js/motion.js"></script><script src="../../../../js/next-boot.js"></script><script src="../../../../js/bookmark.js"></script>
+
+  
+<script src="../../../../js/third-party/search/local-search.js"></script>
+
+
+
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+  
+
+  <script class="next-config" data-name="enableMath" type="application/json">true</script><script class="next-config" data-name="mathjax" type="application/json">{&quot;enable&quot;:true,&quot;tags&quot;:&quot;none&quot;,&quot;js&quot;:&quot;https:&#x2F;&#x2F;unpkg.com&#x2F;mathjax@3.1.2&#x2F;es5&#x2F;tex-mml-chtml.js&quot;}</script>
+<script src="../../../../js/third-party/math/mathjax.js"></script>
+
+
+
+
+</body>
+</html>
