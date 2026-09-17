@@ -1,5 +1,10 @@
 /* global CONFIG */
 
+// Keep the resolved script URL before DOMContentLoaded; document.currentScript is
+// no longer available inside the event callback. It also gives us a reliable
+// site root for sub-directory deployments and direct file:// browsing.
+const localSearchScriptUrl = document.currentScript && document.currentScript.src;
+
 document.addEventListener('DOMContentLoaded', () => {
   if (!CONFIG.path) {
     // Search DB path
@@ -10,6 +15,9 @@ document.addEventListener('DOMContentLoaded', () => {
   let isfetched = false;
   let datas;
   const input = document.querySelector('.search-input');
+  const siteRootUrl = localSearchScriptUrl
+    ? new URL('../../../', localSearchScriptUrl)
+    : new URL(CONFIG.root || './', location.href);
 
   const getIndexByWord = (words, text, caseSensitive = false) => {
     const index = [];
@@ -137,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       let resultItem = '';
 
-      url = new URL(url, location.origin);
+      url = new URL(url.replace(/^\/+/, ''), siteRootUrl);
       url.searchParams.append('highlight', keywords.join(' '));
 
       if (slicesOfTitle.length !== 0) {
@@ -196,30 +204,58 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   };
 
+  const prepareData = source => {
+    isfetched = true;
+    datas = source.filter(data => data.title).map(data => ({
+      title  : data.title.trim(),
+      content: data.content ? data.content.trim().replace(/<[^>]+>/g, '') : '',
+      url    : decodeURIComponent(data.url).replace(/\/{2,}/g, '/')
+    }));
+    inputEventFunction();
+  };
+
+  const showLoadError = error => {
+    console.error('[Local Search] Failed to load the search index:', error);
+    const container = document.querySelector('.search-result-container');
+    container.classList.add('no-result');
+    container.innerHTML = '<p class="search-load-error">搜索索引加载失败，请刷新页面后重试。</p>';
+  };
+
   const fetchData = () => {
+    // Browsers block fetch() for local XML files. Load a compact JavaScript
+    // index instead so the site remains searchable when index.html is opened
+    // directly from disk.
+    if (location.protocol === 'file:') {
+      if (window.LOCAL_SEARCH_DATA) {
+        prepareData(window.LOCAL_SEARCH_DATA);
+        return;
+      }
+      const script = document.createElement('script');
+      script.src = new URL('js/search-data.js', siteRootUrl).href;
+      script.onload = () => prepareData(window.LOCAL_SEARCH_DATA || []);
+      script.onerror = showLoadError;
+      document.head.appendChild(script);
+      return;
+    }
+
     const isXml = !CONFIG.path.endsWith('json');
-    fetch(CONFIG.path)
-      .then(response => response.text())
+    const searchIndexUrl = new URL(CONFIG.path.replace(/^\/+/, ''), siteRootUrl);
+    fetch(searchIndexUrl)
+      .then(response => {
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        return response.text();
+      })
       .then(res => {
-        // Get the contents from search data
-        isfetched = true;
-        datas = isXml ? [...new DOMParser().parseFromString(res, 'text/xml').querySelectorAll('entry')].map(element => {
-          return {
+        const source = isXml
+          ? [...new DOMParser().parseFromString(res, 'text/xml').querySelectorAll('entry')].map(element => ({
             title  : element.querySelector('title').textContent,
             content: element.querySelector('content').textContent,
             url    : element.querySelector('url').textContent
-          };
-        }) : JSON.parse(res);
-        // Only match articles with non-empty titles
-        datas = datas.filter(data => data.title).map(data => {
-          data.title = data.title.trim();
-          data.content = data.content ? data.content.trim().replace(/<[^>]+>/g, '') : '';
-          data.url = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
-          return data;
-        });
-        // Remove loading animation
-        inputEventFunction();
-      });
+          }))
+          : JSON.parse(res);
+        prepareData(source);
+      })
+      .catch(showLoadError);
   };
 
   // Highlight by wrapping node in mark elements with the given class name
