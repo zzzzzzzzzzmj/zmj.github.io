@@ -25,6 +25,7 @@ window.LIFE_ENTRIES = [
     date: '2026-07-10',
     location: '',
     text: '',
+    notePosition: 'side',
     photos: [
       {
         src: '../images/life/2026/07/0710-01.jpg',

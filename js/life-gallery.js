@@ -14,6 +14,7 @@
   let activePhotos = [];
   let activePhotoIndex = 0;
   let lastTrigger = null;
+  let entrySequence = 0;
 
   const parseDate = dateValue => {
     const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateValue || '');
@@ -93,8 +94,21 @@
   const createEntry = item => {
     const article = createElement('article', 'life-entry');
     const meta = createElement('header', 'life-entry-meta');
-    const date = createElement('div', 'life-entry-date', `${item.date.month}.${item.date.day}`);
-    meta.appendChild(date);
+    const content = createElement('div', 'life-entry-content');
+    const toggle = createElement('button', 'life-entry-toggle');
+    const dateLabel = `${item.date.month}.${item.date.day}`;
+    const contentId = `life-entry-content-${item.date.key}-${entrySequence += 1}`;
+    const date = createElement('span', 'life-entry-date', dateLabel);
+    const toggleIcon = createElement('i', 'fas fa-chevron-down life-entry-toggle-icon');
+    toggle.type = 'button';
+    toggle.setAttribute('aria-controls', contentId);
+    toggle.setAttribute('aria-expanded', 'true');
+    toggle.setAttribute('aria-label', `收起 ${dateLabel} 的生活记录`);
+    toggleIcon.setAttribute('aria-hidden', 'true');
+    toggle.append(date, toggleIcon);
+    meta.appendChild(toggle);
+
+    content.id = contentId;
 
     if (item.location) {
       const location = createElement('div', 'life-entry-location');
@@ -104,14 +118,37 @@
       meta.appendChild(location);
     }
 
-    article.appendChild(meta);
+    article.append(meta, content);
+
+    const layout = createElement('div', 'life-entry-layout');
+    const showSideNote = item.text && item.notePosition === 'side' && item.photos.length;
+    if (showSideNote) layout.classList.add('has-side-note');
+
     if (item.photos.length) {
       const photoGrid = createElement('div', 'life-photo-grid');
       photoGrid.dataset.count = String(item.photos.length);
       item.photos.forEach((photo, index) => photoGrid.appendChild(createPhoto(photo, item.photos, index)));
-      article.appendChild(photoGrid);
+      layout.appendChild(photoGrid);
     }
-    if (item.text) article.appendChild(createElement('p', 'life-entry-text', item.text));
+
+    if (showSideNote) {
+      const note = createElement('aside', 'life-entry-note');
+      note.setAttribute('aria-label', `${dateLabel} 记录说明`);
+      note.appendChild(createElement('p', 'life-entry-text', item.text));
+      layout.appendChild(note);
+    }
+
+    if (layout.childElementCount) content.appendChild(layout);
+    if (item.text && !showSideNote) content.appendChild(createElement('p', 'life-entry-text', item.text));
+
+    toggle.addEventListener('click', () => {
+      const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
+      toggle.setAttribute('aria-expanded', String(!isExpanded));
+      toggle.setAttribute('aria-label', `${isExpanded ? '展开' : '收起'} ${dateLabel} 的生活记录`);
+      content.hidden = isExpanded;
+      article.classList.toggle('is-collapsed', isExpanded);
+    });
+
     return article;
   };
 
