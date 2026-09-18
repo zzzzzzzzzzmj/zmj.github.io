@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="1050" viewBox="0 0 1500 1050" role="img" aria-labelledby="title desc">
+  <title id="title">生活照片占位图六</title>
+  <desc id="desc">用于替换为湖边旅行照片的中性占位图</desc>
+  <rect width="1500" height="1050" fill="#e7edef"/>
+  <path d="M0 610c245-105 450 90 700 5s470-50 800 0v435H0z" fill="#cbd8de"/>
+  <path d="M0 610c245-105 450 90 700 5s470-50 800 0" fill="none" stroke="#7f96a4" stroke-width="11"/>
+  <path d="M185 500 380 285 550 500M990 500l210-250 225 250" fill="#d5e0e4" stroke="#7f96a4" stroke-width="10"/>
+  <circle cx="755" cy="230" r="70" fill="#f5f7f8" stroke="#96a8b2" stroke-width="8"/>
+  <path d="M590 745h320M650 815h200" stroke="#91a5b0" stroke-width="9" stroke-linecap="round"/>
+  <text x="70" y="970" fill="#607887" font-family="sans-serif" font-size="32" letter-spacing="5">PHOTO PLACEHOLDER · 06</text>
+</svg>

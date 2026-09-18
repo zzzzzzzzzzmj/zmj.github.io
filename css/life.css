@@ -1,0 +1,343 @@
+.life-page {
+  padding-bottom: 68px;
+}
+
+.life-page .post-header {
+  margin-bottom: 0;
+}
+
+.life-page .post-title {
+  color: var(--text-color);
+  font-size: 30px;
+  font-weight: 500;
+}
+
+.life-page .post-body {
+  margin: 0 auto;
+  max-width: 900px;
+  text-align: left;
+}
+
+.life-page-summary {
+  color: #7d8d98;
+  font-size: 15px;
+  line-height: 1.7;
+  margin: 24px 0 0;
+  text-align: center;
+}
+
+.life-log {
+  margin-top: 46px;
+}
+
+.life-year-group + .life-year-group {
+  margin-top: 72px;
+}
+
+.life-page .life-year-title {
+  border-bottom: 0;
+  color: var(--text-color);
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1.35;
+  margin: 0 0 34px;
+  padding-top: 0;
+}
+
+.life-month-group + .life-month-group {
+  margin-top: 62px;
+}
+
+.life-page .life-month-title {
+  align-items: center;
+  border-bottom: 0;
+  color: #3d5565;
+  display: flex;
+  font-size: 19px;
+  font-weight: 500;
+  gap: 16px;
+  line-height: 1.4;
+  margin: 0 0 30px;
+  padding-top: 0;
+}
+
+.life-page .life-month-title::after {
+  border-top: 1px solid #dfe6ea;
+  content: '';
+  flex: 1;
+}
+
+.life-entry {
+  border-bottom: 1px solid #edf1f3;
+  margin: 0 0 46px;
+  padding: 0 0 46px;
+}
+
+.life-entry:last-child {
+  margin-bottom: 0;
+}
+
+.life-entry-meta {
+  margin-bottom: 18px;
+}
+
+.life-entry-date {
+  color: var(--text-color);
+  font-family: Lato, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  line-height: 1.5;
+}
+
+.life-entry-location {
+  align-items: center;
+  color: #8797a1;
+  display: flex;
+  font-size: 13px;
+  gap: 6px;
+  line-height: 1.6;
+  margin-top: 3px;
+}
+
+.life-entry-location .fas {
+  color: #7894a5;
+  font-size: 12px;
+}
+
+.life-photo-grid {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.life-photo-grid[data-count='1'] {
+  grid-template-columns: minmax(0, 760px);
+}
+
+.life-photo-grid[data-count='3'] {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.life-photo {
+  margin: 0;
+  min-width: 0;
+}
+
+.life-photo-button {
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: zoom-in;
+  display: block;
+  padding: 0;
+  width: 100%;
+}
+
+.life-photo-button:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 3px;
+}
+
+.life-photo img {
+  border: 0;
+  border-radius: 5px;
+  box-shadow: none;
+  display: block;
+  height: auto;
+  margin: 0;
+  margin-bottom: 0;
+  max-width: 100%;
+  width: 100%;
+}
+
+.life-photo-caption {
+  color: #8a979f;
+  font-size: 12px;
+  line-height: 1.6;
+  margin-top: 5px;
+}
+
+.life-entry-text {
+  color: #586b78;
+  font-size: 15px;
+  line-height: 1.8;
+  margin: 19px 0 0;
+  white-space: pre-line;
+}
+
+.life-empty {
+  border-bottom: 1px solid #edf1f3;
+  border-top: 1px solid #edf1f3;
+  color: #7d8d98;
+  font-size: 15px;
+  line-height: 1.8;
+  margin: 52px auto 0;
+  padding: 30px 12px;
+  text-align: center;
+}
+
+body.life-lightbox-open {
+  overflow: hidden;
+}
+
+.life-lightbox[hidden] {
+  display: none;
+}
+
+.life-lightbox {
+  align-items: center;
+  background: rgba(15, 24, 30, 0.9);
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) 56px;
+  inset: 0;
+  padding: 54px 24px 30px;
+  position: fixed;
+  z-index: 1800;
+}
+
+.life-lightbox-figure {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 0;
+  max-height: calc(100vh - 84px);
+  min-height: 0;
+  min-width: 0;
+}
+
+.life-lightbox-image {
+  border-radius: 4px;
+  display: block;
+  height: auto;
+  margin: 0 auto;
+  max-height: calc(100vh - 126px);
+  max-width: 100%;
+  object-fit: contain;
+  width: auto;
+}
+
+.life-lightbox-caption {
+  color: #d2dce2;
+  font-size: 13px;
+  line-height: 1.6;
+  margin-top: 10px;
+  min-height: 1.6em;
+  text-align: center;
+}
+
+.life-lightbox-close,
+.life-lightbox-nav {
+  background: transparent;
+  border: 0;
+  color: #e7edf0;
+  cursor: pointer;
+}
+
+.life-lightbox-close:focus-visible,
+.life-lightbox-nav:focus-visible {
+  outline: 2px solid #c4d1d8;
+  outline-offset: 3px;
+}
+
+.life-lightbox-close {
+  font-size: 34px;
+  line-height: 1;
+  padding: 8px 12px;
+  position: absolute;
+  right: 18px;
+  top: 12px;
+}
+
+.life-lightbox-nav {
+  font-size: 20px;
+  height: 56px;
+  justify-self: center;
+  width: 48px;
+}
+
+.life-lightbox-nav.is-hidden {
+  visibility: hidden;
+}
+
+@media (max-width: 767px) {
+  .life-page {
+    padding-bottom: 56px;
+  }
+
+  .life-page .post-title {
+    font-size: 28px;
+  }
+
+  .life-page .post-body {
+    padding: 0 8px;
+  }
+
+  .life-page-summary {
+    margin-top: 20px;
+  }
+
+  .life-log {
+    margin-top: 40px;
+  }
+
+  .life-year-group + .life-year-group {
+    margin-top: 60px;
+  }
+
+  .life-year-title {
+    font-size: 26px;
+    margin-bottom: 28px;
+  }
+
+  .life-month-group + .life-month-group {
+    margin-top: 52px;
+  }
+
+  .life-month-title {
+    font-size: 18px;
+    margin-bottom: 25px;
+  }
+
+  .life-entry {
+    margin-bottom: 38px;
+    padding-bottom: 38px;
+  }
+
+  .life-photo-grid[data-count='3'] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .life-lightbox {
+    grid-template-columns: 40px minmax(0, 1fr) 40px;
+    padding: 52px 8px 24px;
+  }
+
+  .life-lightbox-nav {
+    font-size: 17px;
+    width: 38px;
+  }
+}
+
+@media (max-width: 520px) {
+  .life-photo-grid,
+  .life-photo-grid[data-count='3'] {
+    grid-template-columns: 1fr;
+  }
+
+  .life-lightbox {
+    grid-template-columns: 36px minmax(0, 1fr) 36px;
+  }
+
+  .life-lightbox-close {
+    right: 8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .life-lightbox,
+  .life-lightbox * {
+    scroll-behavior: auto;
+  }
+}
