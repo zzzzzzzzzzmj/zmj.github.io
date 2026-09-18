@@ -21,14 +21,13 @@ images/life/
 
 ## 添加文字说明
 
-每条记录可通过 `text` 添加整组照片的说明，并用 `notePosition` 控制位置：
+每条记录可通过 `text` 添加碎碎念文字；桌面端会显示在照片右侧，移动端会自动移动到照片上方：
 
 ```js
 {
   date: '2026-07-10',
-  location: '',
+  location: 'Dallas · Texas',
   text: '这里填写这一天的文字记录。',
-  notePosition: 'side', // `side` 显示在右侧，省略或写 `below` 显示在图片下方
   photos: [
     {
       src: '../images/life/2026/07/0710-01.jpg',
@@ -39,4 +38,4 @@ images/life/
 }
 ```
 
-手机端的右侧说明会自动移动到照片下方。`text` 或 `caption` 为空时不会显示占位内容。
+`caption` 是单张照片下方的可选说明。`location`、`text` 或 `caption` 为空时不会显示占位内容。

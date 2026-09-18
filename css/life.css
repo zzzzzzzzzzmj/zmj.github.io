@@ -36,12 +36,9 @@
 
 .life-page .life-year-title {
   border-bottom: 0;
-  color: var(--text-color);
-  font-size: 28px;
-  font-weight: 500;
-  line-height: 1.35;
   margin: 0 0 34px;
   padding-top: 0;
+  transition: margin-bottom 0.28s ease;
 }
 
 .life-month-group + .life-month-group {
@@ -51,14 +48,11 @@
 .life-page .life-month-title {
   align-items: center;
   border-bottom: 0;
-  color: #3d5565;
   display: flex;
-  font-size: 19px;
-  font-weight: 500;
   gap: 16px;
-  line-height: 1.4;
   margin: 0 0 30px;
   padding-top: 0;
+  transition: margin-bottom 0.28s ease;
 }
 
 .life-page .life-month-title::after {
@@ -67,70 +61,124 @@
   flex: 1;
 }
 
-.life-entry {
-  border-bottom: 1px solid #edf1f3;
-  margin: 0 0 46px;
-  padding: 0 0 46px;
-}
-
-.life-entry:last-child {
-  margin-bottom: 0;
-}
-
-.life-entry-meta {
-  margin-bottom: 18px;
-}
-
-.life-entry-toggle {
+.life-group-toggle {
   align-items: center;
   background: transparent;
   border: 0;
   color: inherit;
   cursor: pointer;
   display: inline-flex;
-  gap: 9px;
+  gap: 10px;
   padding: 2px 0;
 }
 
-.life-entry-toggle:hover .life-entry-date {
+.life-year-toggle {
+  color: var(--text-color);
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.life-month-toggle {
+  color: #3d5565;
+  font-size: 19px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.life-group-toggle:hover {
   color: #365f78;
 }
 
-.life-entry-toggle:focus-visible {
+.life-group-toggle:focus-visible {
   outline: 2px solid var(--accent-blue);
   outline-offset: 4px;
+}
+
+.life-group-toggle-icon {
+  color: #8c9aa3;
+  font-size: 10px;
+  transition: transform 0.28s ease, color 0.2s ease;
+}
+
+.life-group-toggle[aria-expanded='false'] .life-group-toggle-icon {
+  transform: rotate(-90deg);
+}
+
+.life-group-collapse {
+  display: grid;
+  grid-template-rows: 1fr;
+  opacity: 1;
+  transition: grid-template-rows 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.22s ease;
+}
+
+.life-group-collapse.is-collapsed {
+  grid-template-rows: 0fr;
+  opacity: 0;
+}
+
+.life-group-inner {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.life-year-group.is-collapsed .life-year-title,
+.life-month-group.is-collapsed .life-month-title {
+  margin-bottom: 0;
+}
+
+.life-entry {
+  border-bottom: 1px solid #edf1f3;
+  margin: 0 0 52px;
+  padding: 0 0 52px;
+}
+
+.life-entry:last-child {
+  margin-bottom: 0;
+}
+
+.life-entry-layout {
+  align-items: start;
+  display: grid;
+  gap: 34px;
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 250px);
+}
+
+.life-entry-info {
+  grid-column: 2;
+  grid-row: 1;
+  min-width: 0;
+  padding-top: 2px;
+}
+
+.life-entry-photos {
+  grid-column: 1;
+  grid-row: 1;
+  max-width: 620px;
+  min-width: 0;
+  width: 100%;
+}
+
+.life-entry-layout.has-no-photos {
+  grid-template-columns: minmax(220px, 420px);
+}
+
+.life-entry-layout.has-no-photos .life-entry-info {
+  grid-column: 1;
+}
+
+.life-entry-layout.has-no-photos .life-entry-photos {
+  display: none;
 }
 
 .life-entry-date {
   color: var(--text-color);
   font-family: Lato, 'PingFang SC', 'Microsoft YaHei', sans-serif;
-  font-size: 16px;
-  font-weight: 500;
+  font-size: 23px;
+  font-weight: 600;
   letter-spacing: 0.04em;
-  line-height: 1.5;
-}
-
-.life-entry-toggle-icon {
-  color: #8c9aa3;
-  font-size: 10px;
-  transition: transform 0.2s ease, color 0.2s ease;
-}
-
-.life-entry-toggle[aria-expanded='false'] .life-entry-toggle-icon {
-  transform: rotate(-90deg);
-}
-
-.life-entry.is-collapsed {
-  margin-bottom: 24px;
-  padding-bottom: 24px;
-}
-
-.life-entry.is-collapsed .life-entry-meta {
-  margin-bottom: 0;
-}
-
-.life-entry-content[hidden] {
-  display: none;
+  line-height: 1.35;
+  margin: 0;
 }
 
 .life-entry-location {
@@ -140,7 +188,7 @@
   font-size: 13px;
   gap: 6px;
   line-height: 1.6;
-  margin-top: 3px;
+  margin-top: 8px;
 }
 
 .life-entry-location .fas {
@@ -150,17 +198,13 @@
 
 .life-photo-grid {
   display: grid;
-  gap: 10px;
+  gap: 10px 12px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .life-photo-grid[data-count='1'] {
-  grid-template-columns: minmax(0, 720px);
-  justify-content: center;
-}
-
-.life-photo-grid[data-count='3'] {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  display: block;
+  max-width: 560px;
 }
 
 .life-photo {
@@ -169,15 +213,20 @@
 }
 
 .life-photo-button {
-  align-items: flex-start;
-  background: transparent;
-  border: 0;
+  aspect-ratio: 4 / 3;
+  background: #eef2f4;
+  border: 1px solid #e8edef;
+  border-radius: 6px;
   color: inherit;
   cursor: zoom-in;
-  display: flex;
-  justify-content: center;
+  display: block;
+  overflow: hidden;
   padding: 0;
   width: 100%;
+}
+
+.life-photo-button:hover {
+  border-color: #cdd8de;
 }
 
 .life-photo-button:focus-visible {
@@ -187,20 +236,16 @@
 
 .life-photo img {
   border: 0;
-  border-radius: 5px;
+  border-radius: 0;
   box-shadow: none;
   display: block;
-  height: auto;
+  height: 100%;
   margin: 0;
   margin-bottom: 0;
   max-width: 100%;
+  object-fit: cover;
+  object-position: center 38%;
   width: 100%;
-}
-
-.life-photo-grid[data-count='1'] .life-photo img {
-  max-height: 460px;
-  object-fit: contain;
-  width: auto;
 }
 
 .life-photo-caption {
@@ -210,48 +255,12 @@
   margin-top: 5px;
 }
 
-.life-photo-grid[data-count='1'] .life-photo-caption {
-  margin-left: auto;
-  margin-right: auto;
-  max-width: 520px;
-}
-
-.life-entry-layout.has-side-note {
-  align-items: start;
-  display: grid;
-  gap: 28px;
-  grid-template-columns: minmax(0, 1fr) minmax(210px, 0.38fr);
-}
-
-.life-entry-layout.has-side-note .life-photo-grid {
-  min-width: 0;
-}
-
-.life-entry-note {
-  border-left: 1px solid #dfe6ea;
-  color: #586b78;
-  padding: 2px 0 2px 20px;
-}
-
-.life-entry-note::before {
-  color: #8998a2;
-  content: '记录';
-  display: block;
-  font-size: 12px;
-  letter-spacing: 0.08em;
-  margin-bottom: 9px;
-}
-
 .life-entry-text {
   color: #586b78;
   font-size: 15px;
   line-height: 1.8;
-  margin: 19px 0 0;
+  margin: 16px 0 0;
   white-space: pre-line;
-}
-
-.life-entry-note .life-entry-text {
-  margin-top: 0;
 }
 
 .life-empty {
@@ -374,42 +383,34 @@ body.life-lightbox-open {
     margin-top: 60px;
   }
 
-  .life-year-title {
-    font-size: 26px;
+  .life-page .life-year-title {
     margin-bottom: 28px;
+  }
+
+  .life-year-toggle {
+    font-size: 26px;
   }
 
   .life-month-group + .life-month-group {
     margin-top: 52px;
   }
 
-  .life-month-title {
-    font-size: 18px;
+  .life-page .life-month-title {
     margin-bottom: 25px;
   }
 
+  .life-month-toggle {
+    font-size: 18px;
+  }
+
   .life-entry {
-    margin-bottom: 38px;
-    padding-bottom: 38px;
+    margin-bottom: 44px;
+    padding-bottom: 44px;
   }
 
-  .life-entry-layout.has-side-note {
-    display: block;
-  }
-
-  .life-entry-note {
-    border-left: 0;
-    border-top: 1px solid #edf1f3;
-    margin-top: 18px;
-    padding: 16px 0 0;
-  }
-
-  .life-photo-grid[data-count='1'] .life-photo img {
-    max-height: min(460px, 64vh);
-  }
-
-  .life-photo-grid[data-count='3'] {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .life-entry-layout {
+    gap: 24px;
+    grid-template-columns: minmax(0, 1fr) minmax(190px, 220px);
   }
 
   .life-lightbox {
@@ -423,10 +424,41 @@ body.life-lightbox-open {
   }
 }
 
+@media (max-width: 680px) {
+  .life-entry-layout,
+  .life-entry-layout.has-no-photos {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .life-entry-info {
+    order: 1;
+    padding-top: 0;
+    width: 100%;
+  }
+
+  .life-entry-photos {
+    max-width: none;
+    order: 2;
+  }
+
+  .life-entry-date {
+    font-size: 22px;
+  }
+
+  .life-entry-text {
+    margin-top: 14px;
+  }
+}
+
 @media (max-width: 520px) {
-  .life-photo-grid,
-  .life-photo-grid[data-count='3'] {
+  .life-photo-grid {
     grid-template-columns: 1fr;
+  }
+
+  .life-photo-grid[data-count='1'] {
+    max-width: none;
   }
 
   .life-lightbox {
@@ -439,7 +471,8 @@ body.life-lightbox-open {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .life-entry-toggle-icon,
+  .life-group-toggle-icon,
+  .life-group-collapse,
   .life-lightbox,
   .life-lightbox * {
     transition: none;

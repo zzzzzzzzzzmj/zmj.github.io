@@ -14,7 +14,6 @@
   let activePhotos = [];
   let activePhotoIndex = 0;
   let lastTrigger = null;
-  let entrySequence = 0;
 
   const parseDate = dateValue => {
     const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateValue || '');
@@ -34,6 +33,40 @@
     if (className) element.className = className;
     if (text !== undefined) element.textContent = text;
     return element;
+  };
+
+  const createDisclosure = (level, label, contentId) => {
+    const heading = createElement(level === 'year' ? 'h2' : 'h3', `life-${level}-title`);
+    const button = createElement('button', `life-group-toggle life-${level}-toggle`);
+    const buttonText = createElement('span', 'life-group-toggle-text', label);
+    const icon = createElement('i', 'fas fa-chevron-down life-group-toggle-icon');
+    button.type = 'button';
+    button.setAttribute('aria-controls', contentId);
+    button.setAttribute('aria-expanded', 'true');
+    button.setAttribute('aria-label', `收起${label}`);
+    icon.setAttribute('aria-hidden', 'true');
+    button.append(buttonText, icon);
+    heading.appendChild(button);
+    return { button, heading };
+  };
+
+  const connectDisclosure = (button, content, section, label) => {
+    button.addEventListener('click', () => {
+      const willExpand = button.getAttribute('aria-expanded') !== 'true';
+      button.setAttribute('aria-expanded', String(willExpand));
+      button.setAttribute('aria-label', `${willExpand ? '收起' : '展开'}${label}`);
+      content.setAttribute('aria-hidden', String(!willExpand));
+      content.classList.toggle('is-collapsed', !willExpand);
+      section.classList.toggle('is-collapsed', !willExpand);
+      content.inert = !willExpand;
+    });
+  };
+
+  const createCollapsible = className => {
+    const content = createElement('div', `life-group-collapse ${className}`);
+    const inner = createElement('div', 'life-group-inner');
+    content.appendChild(inner);
+    return { content, inner };
   };
 
   const updateLightbox = () => {
@@ -93,62 +126,33 @@
 
   const createEntry = item => {
     const article = createElement('article', 'life-entry');
-    const meta = createElement('header', 'life-entry-meta');
-    const content = createElement('div', 'life-entry-content');
-    const toggle = createElement('button', 'life-entry-toggle');
+    const layout = createElement('div', 'life-entry-layout');
+    const info = createElement('header', 'life-entry-info');
+    const photos = createElement('div', 'life-entry-photos');
     const dateLabel = `${item.date.month}.${item.date.day}`;
-    const contentId = `life-entry-content-${item.date.key}-${entrySequence += 1}`;
-    const date = createElement('span', 'life-entry-date', dateLabel);
-    const toggleIcon = createElement('i', 'fas fa-chevron-down life-entry-toggle-icon');
-    toggle.type = 'button';
-    toggle.setAttribute('aria-controls', contentId);
-    toggle.setAttribute('aria-expanded', 'true');
-    toggle.setAttribute('aria-label', `收起 ${dateLabel} 的生活记录`);
-    toggleIcon.setAttribute('aria-hidden', 'true');
-    toggle.append(date, toggleIcon);
-    meta.appendChild(toggle);
-
-    content.id = contentId;
+    info.appendChild(createElement('h4', 'life-entry-date', dateLabel));
 
     if (item.location) {
       const location = createElement('div', 'life-entry-location');
       const locationIcon = createElement('i', 'fas fa-map-marker-alt');
       locationIcon.setAttribute('aria-hidden', 'true');
       location.append(locationIcon, document.createTextNode(item.location));
-      meta.appendChild(location);
+      info.appendChild(location);
     }
 
-    article.append(meta, content);
-
-    const layout = createElement('div', 'life-entry-layout');
-    const showSideNote = item.text && item.notePosition === 'side' && item.photos.length;
-    if (showSideNote) layout.classList.add('has-side-note');
+    if (item.text) info.appendChild(createElement('p', 'life-entry-text', item.text));
 
     if (item.photos.length) {
       const photoGrid = createElement('div', 'life-photo-grid');
       photoGrid.dataset.count = String(item.photos.length);
       item.photos.forEach((photo, index) => photoGrid.appendChild(createPhoto(photo, item.photos, index)));
-      layout.appendChild(photoGrid);
+      photos.appendChild(photoGrid);
+    } else {
+      layout.classList.add('has-no-photos');
     }
 
-    if (showSideNote) {
-      const note = createElement('aside', 'life-entry-note');
-      note.setAttribute('aria-label', `${dateLabel} 记录说明`);
-      note.appendChild(createElement('p', 'life-entry-text', item.text));
-      layout.appendChild(note);
-    }
-
-    if (layout.childElementCount) content.appendChild(layout);
-    if (item.text && !showSideNote) content.appendChild(createElement('p', 'life-entry-text', item.text));
-
-    toggle.addEventListener('click', () => {
-      const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
-      toggle.setAttribute('aria-expanded', String(!isExpanded));
-      toggle.setAttribute('aria-label', `${isExpanded ? '展开' : '收起'} ${dateLabel} 的生活记录`);
-      content.hidden = isExpanded;
-      article.classList.toggle('is-collapsed', isExpanded);
-    });
-
+    layout.append(info, photos);
+    article.appendChild(layout);
     return article;
   };
 
@@ -174,13 +178,26 @@
 
     years.forEach((months, year) => {
       const yearSection = createElement('section', 'life-year-group');
-      yearSection.appendChild(createElement('h2', 'life-year-title', year));
-      months.forEach(monthEntries => {
+      const yearContentId = `life-year-content-${year}`;
+      const yearDisclosure = createDisclosure('year', year, yearContentId);
+      const yearCollapsible = createCollapsible('life-year-content');
+      yearCollapsible.content.id = yearContentId;
+
+      months.forEach((monthEntries, month) => {
         const monthSection = createElement('section', 'life-month-group');
-        monthSection.appendChild(createElement('h3', 'life-month-title', monthEntries[0].date.monthName));
-        monthEntries.forEach(entry => monthSection.appendChild(createEntry(entry)));
-        yearSection.appendChild(monthSection);
+        const monthLabel = monthEntries[0].date.monthName;
+        const monthContentId = `life-month-content-${year}-${month}`;
+        const monthDisclosure = createDisclosure('month', monthLabel, monthContentId);
+        const monthCollapsible = createCollapsible('life-month-content');
+        monthCollapsible.content.id = monthContentId;
+        monthEntries.forEach(entry => monthCollapsible.inner.appendChild(createEntry(entry)));
+        monthSection.append(monthDisclosure.heading, monthCollapsible.content);
+        connectDisclosure(monthDisclosure.button, monthCollapsible.content, monthSection, monthLabel);
+        yearCollapsible.inner.appendChild(monthSection);
       });
+
+      yearSection.append(yearDisclosure.heading, yearCollapsible.content);
+      connectDisclosure(yearDisclosure.button, yearCollapsible.content, yearSection, year);
       logRoot.appendChild(yearSection);
     });
   }
