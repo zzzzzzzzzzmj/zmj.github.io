@@ -34,7 +34,7 @@
     return element;
   };
 
-  const createDisclosure = (level, label, contentId, photoCount = 0) => {
+  const createDisclosure = (level, label, contentId, photoCount = 0, noteText = '') => {
     const heading = createElement(level === 'year' ? 'h2' : 'h3', `life-${level}-title`);
     const button = createElement('button', `life-group-toggle life-${level}-toggle`);
     const buttonText = createElement('span', 'life-group-toggle-text', label);
@@ -50,6 +50,13 @@
     }
     button.appendChild(icon);
     heading.appendChild(button);
+    if (level === 'month' && noteText) {
+      const note = createElement('span', 'life-month-note');
+      const pin = createElement('i', 'fas fa-thumbtack');
+      pin.setAttribute('aria-hidden', 'true');
+      note.append(pin, document.createTextNode(noteText));
+      heading.appendChild(note);
+    }
     return { button, heading };
   };
 
@@ -130,14 +137,6 @@
   const createMonthArchive = item => {
     const archive = createElement('div', 'life-month-archive');
 
-    if (item.text) {
-      const note = createElement('p', 'life-month-note');
-      const pin = createElement('i', 'fas fa-thumbtack');
-      pin.setAttribute('aria-hidden', 'true');
-      note.append(pin, document.createTextNode(item.text));
-      archive.appendChild(note);
-    }
-
     if (item.photos.length) {
       const photoGrid = createElement('div', 'life-photo-grid');
       photoGrid.dataset.count = String(item.photos.length);
@@ -180,7 +179,13 @@
         const monthSection = createElement('section', 'life-month-group');
         const monthLabel = monthRecord.monthData.monthName;
         const monthContentId = `life-month-content-${year}-${month}`;
-        const monthDisclosure = createDisclosure('month', monthLabel, monthContentId, monthRecord.photos.length);
+        const monthDisclosure = createDisclosure(
+          'month',
+          monthLabel,
+          monthContentId,
+          monthRecord.photos.length,
+          monthRecord.text
+        );
         const monthCollapsible = createCollapsible('life-month-content');
         monthCollapsible.content.id = monthContentId;
         monthCollapsible.inner.appendChild(createMonthArchive(monthRecord));
