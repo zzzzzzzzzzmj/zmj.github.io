@@ -145,10 +145,17 @@
 }
 
 .life-entry-info {
+  background:
+    radial-gradient(circle at calc(100% - 17px) 16px, rgba(112, 157, 161, 0.38) 0 2px, transparent 2.5px),
+    radial-gradient(circle at calc(100% - 27px) 16px, rgba(112, 157, 161, 0.24) 0 2px, transparent 2.5px),
+    linear-gradient(145deg, #f9fbfc, #f3f8f7);
+  border: 1px solid #e2ebee;
+  border-radius: 10px;
+  box-shadow: 0 5px 16px rgba(52, 75, 89, 0.045);
   grid-column: 2;
   grid-row: 1;
   min-width: 0;
-  padding-top: 2px;
+  padding: 17px 17px 18px;
 }
 
 .life-entry-photos {
@@ -172,13 +179,23 @@
 }
 
 .life-entry-date {
-  color: var(--text-color);
+  color: #355a70;
   font-family: Lato, 'PingFang SC', 'Microsoft YaHei', sans-serif;
   font-size: 23px;
   font-weight: 600;
   letter-spacing: 0.04em;
   line-height: 1.35;
   margin: 0;
+}
+
+.life-entry-date::after {
+  background: #8fb8aa;
+  border-radius: 999px;
+  content: '';
+  display: block;
+  height: 3px;
+  margin-top: 9px;
+  width: 32px;
 }
 
 .life-entry-location {
@@ -204,7 +221,7 @@
 
 .life-photo-grid[data-count='1'] {
   display: block;
-  max-width: 560px;
+  max-width: calc((100% - 12px) / 2);
 }
 
 .life-photo {
@@ -222,11 +239,14 @@
   display: block;
   overflow: hidden;
   padding: 0;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
   width: 100%;
 }
 
 .life-photo-button:hover {
-  border-color: #cdd8de;
+  border-color: #b9ced1;
+  box-shadow: 0 6px 16px rgba(53, 83, 96, 0.09);
+  transform: translateY(-2px);
 }
 
 .life-photo-button:focus-visible {
@@ -256,11 +276,24 @@
 }
 
 .life-entry-text {
-  color: #586b78;
-  font-size: 15px;
+  color: #4f6875;
+  font-size: 16px;
   line-height: 1.8;
   margin: 16px 0 0;
+  padding-left: 19px;
+  position: relative;
   white-space: pre-line;
+}
+
+.life-entry-text::before {
+  color: #83aa9d;
+  content: '“';
+  font-family: Georgia, serif;
+  font-size: 27px;
+  left: 0;
+  line-height: 1;
+  position: absolute;
+  top: -2px;
 }
 
 .life-empty {
@@ -434,7 +467,6 @@ body.life-lightbox-open {
 
   .life-entry-info {
     order: 1;
-    padding-top: 0;
     width: 100%;
   }
 
@@ -449,6 +481,10 @@ body.life-lightbox-open {
 
   .life-entry-text {
     margin-top: 14px;
+  }
+
+  .life-photo-grid[data-count='1'] {
+    max-width: none;
   }
 }
 
@@ -473,6 +509,7 @@ body.life-lightbox-open {
 @media (prefers-reduced-motion: reduce) {
   .life-group-toggle-icon,
   .life-group-collapse,
+  .life-photo-button,
   .life-lightbox,
   .life-lightbox * {
     transition: none;
