@@ -1,8 +1,8 @@
 :root {
   color-scheme: light;
-  --body-bg-color: #e8eef2;
-  --content-bg-color: #fbfcfd;
-  --card-bg-color: #eef3f6;
+  --body-bg-color: #e8eee8;
+  --content-bg-color: #fffdf8;
+  --card-bg-color: #edf4f1;
   --text-color: #31404c;
   --blockquote-color: #536571;
   --link-color: #365f78;
@@ -11,7 +11,7 @@
   --brand-hover-color: #fff;
   --table-row-odd-bg-color: #f3f7f9;
   --table-row-hover-bg-color: #e5edf2;
-  --menu-item-bg-color: #dce8ef;
+  --menu-item-bg-color: #dcebe9;
   --btn-default-bg: #f8fafb;
   --btn-default-color: #365f78;
   --btn-default-border-color: #62839a;
@@ -25,15 +25,15 @@
   --accent-blue: #4f7187;
   --accent-green: #748a78;
   --accent-sand: #a58b62;
-  --panel-blue: #f5f9fb;
-  --panel-green: #f4f8f5;
-  --panel-sand: #faf7f1;
+  --panel-blue: #f4fafb;
+  --panel-green: #f4f9f1;
+  --panel-sand: #fff8e9;
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --body-bg-color: #e8eef2;
-    --content-bg-color: #fbfcfd;
-    --card-bg-color: #eef3f6;
+    --body-bg-color: #e8eee8;
+    --content-bg-color: #fffdf8;
+    --card-bg-color: #edf4f1;
     --text-color: #31404c;
     --blockquote-color: #536571;
     --link-color: #365f78;
@@ -42,7 +42,7 @@
     --brand-hover-color: #fff;
     --table-row-odd-bg-color: #f3f7f9;
     --table-row-hover-bg-color: #e5edf2;
-    --menu-item-bg-color: #dce8ef;
+    --menu-item-bg-color: #dcebe9;
     --btn-default-bg: #f8fafb;
     --btn-default-color: #365f78;
     --btn-default-border-color: #62839a;
@@ -220,13 +220,14 @@ body {
 body {
   background-color: var(--body-bg-color);
   background-image:
-    radial-gradient(circle at 12% 0%, rgba(79,113,135,0.2), transparent 34%),
-    radial-gradient(circle at 88% 18%, rgba(116,138,120,0.14), transparent 30%),
-    linear-gradient(135deg, rgba(255,255,255,0.28) 25%, transparent 25%),
-    linear-gradient(315deg, rgba(255,255,255,0.2) 25%, transparent 25%);
+    radial-gradient(circle at 8% 5%, rgba(118, 167, 180, 0.26), transparent 31%),
+    radial-gradient(circle at 91% 12%, rgba(229, 170, 119, 0.24), transparent 29%),
+    radial-gradient(circle at 82% 82%, rgba(128, 163, 119, 0.2), transparent 31%),
+    radial-gradient(circle at 1px 1px, rgba(52, 77, 88, 0.1) 1px, transparent 1.1px),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(250, 244, 223, 0.18));
   background-attachment: fixed;
-  background-position: 0 0, 0 0, 0 0, 18px 18px;
-  background-size: auto, auto, 36px 36px, 36px 36px;
+  background-position: 0 0, 0 0, 0 0, 0 0, 0 0;
+  background-size: auto, auto, auto, 26px 26px, auto;
   color: var(--text-color);
   font-family: Lato, 'PingFang SC', 'Microsoft YaHei', sans-serif;
   font-size: 15px;
@@ -3050,9 +3051,10 @@ mark.search-keyword {
   animation-fill-mode: both;
 }
 .header-inner {
-  background: var(--content-bg-color);
-  border-radius: initial;
-  box-shadow: 0 2px 2px 0 rgba(0,0,0,0.12), 0 3px 1px -2px rgba(0,0,0,0.06), 0 1px 5px 0 rgba(0,0,0,0.12);
+  background: rgba(255, 253, 248, 0.95);
+  border: 1px solid rgba(72, 103, 115, 0.14);
+  border-radius: 5px;
+  box-shadow: 0 12px 30px rgba(45, 67, 75, 0.12);
   width: 240px;
 }
 @media (max-width: 991px) {
@@ -3286,20 +3288,23 @@ mark.search-keyword {
 .main-inner > .tabs-comment,
 .main-inner > .comments,
 .main-inner > .pagination {
-  background: var(--content-bg-color);
-  border-radius: initial;
-  box-shadow: 0 2px 2px 0 rgba(0,0,0,0.12), 0 3px 1px -2px rgba(0,0,0,0.06), 0 1px 5px 0 rgba(0,0,0,0.12);
+  background-color: var(--content-bg-color);
+  background-image: radial-gradient(circle at 1px 1px, rgba(54, 83, 95, 0.04) 1px, transparent 0);
+  background-size: 20px 20px;
+  border: 1px solid rgba(72, 103, 115, 0.14);
+  border-radius: 5px;
+  box-shadow: 0 12px 30px rgba(45, 67, 75, 0.11);
 }
 .main-inner > .post-block {
-  background: var(--panel-blue);
+  background-color: var(--panel-blue);
   border-top: 3px solid var(--accent-blue);
 }
 .main-inner > .post-block:nth-of-type(3n + 2) {
-  background: var(--panel-green);
+  background-color: var(--panel-green);
   border-top-color: var(--accent-green);
 }
 .main-inner > .post-block:nth-of-type(3n) {
-  background: var(--panel-sand);
+  background-color: var(--panel-sand);
   border-top-color: var(--accent-sand);
 }
 .main-inner > .sub-menu:not(:first-child):not(.sub-menu),

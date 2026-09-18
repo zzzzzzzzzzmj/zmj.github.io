@@ -4,24 +4,23 @@
 
   if (!logRoot || !lightbox) return;
 
-  const entries = Array.isArray(window.LIFE_ENTRIES) ? [...window.LIFE_ENTRIES] : [];
+  const monthRecords = Array.isArray(window.LIFE_MONTHS) ? [...window.LIFE_MONTHS] : [];
   const closeButton = lightbox.querySelector('.life-lightbox-close');
   const previousButton = lightbox.querySelector('.life-lightbox-prev');
   const nextButton = lightbox.querySelector('.life-lightbox-next');
   const lightboxImage = lightbox.querySelector('.life-lightbox-image');
   const lightboxCaption = lightbox.querySelector('.life-lightbox-caption');
-  const monthNames = new Intl.DateTimeFormat('en-US', { month: 'long' });
+  const monthNames = new Intl.DateTimeFormat('zh-CN', { month: 'long' });
   let activePhotos = [];
   let activePhotoIndex = 0;
   let lastTrigger = null;
 
-  const parseDate = dateValue => {
-    const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateValue || '');
+  const parseMonth = monthValue => {
+    const match = /^(\d{4})-(\d{2})$/.exec(monthValue || '');
     if (!match) return null;
-    const [, year, month, day] = match;
+    const [, year, month] = match;
     return {
-      day,
-      key: `${year}-${month}-${day}`,
+      key: `${year}-${month}`,
       month,
       monthName: monthNames.format(new Date(Number(year), Number(month) - 1, 1)),
       year
@@ -35,7 +34,7 @@
     return element;
   };
 
-  const createDisclosure = (level, label, contentId) => {
+  const createDisclosure = (level, label, contentId, photoCount = 0) => {
     const heading = createElement(level === 'year' ? 'h2' : 'h3', `life-${level}-title`);
     const button = createElement('button', `life-group-toggle life-${level}-toggle`);
     const buttonText = createElement('span', 'life-group-toggle-text', label);
@@ -45,7 +44,11 @@
     button.setAttribute('aria-expanded', 'true');
     button.setAttribute('aria-label', `收起${label}`);
     icon.setAttribute('aria-hidden', 'true');
-    button.append(buttonText, icon);
+    button.appendChild(buttonText);
+    if (level === 'month') {
+      button.appendChild(createElement('span', 'life-month-count', `${photoCount} 张`));
+    }
+    button.appendChild(icon);
     heading.appendChild(button);
     return { button, heading };
   };
@@ -124,56 +127,45 @@
     return figure;
   };
 
-  const createEntry = item => {
-    const article = createElement('article', 'life-entry');
-    const layout = createElement('div', 'life-entry-layout');
-    const info = createElement('header', 'life-entry-info');
-    const photos = createElement('div', 'life-entry-photos');
-    const dateLabel = `${item.date.month}.${item.date.day}`;
-    info.appendChild(createElement('h4', 'life-entry-date', dateLabel));
+  const createMonthArchive = item => {
+    const archive = createElement('div', 'life-month-archive');
 
-    if (item.location) {
-      const location = createElement('div', 'life-entry-location');
-      const locationIcon = createElement('i', 'fas fa-map-marker-alt');
-      locationIcon.setAttribute('aria-hidden', 'true');
-      location.append(locationIcon, document.createTextNode(item.location));
-      info.appendChild(location);
+    if (item.text) {
+      const note = createElement('p', 'life-month-note');
+      const pin = createElement('i', 'fas fa-thumbtack');
+      pin.setAttribute('aria-hidden', 'true');
+      note.append(pin, document.createTextNode(item.text));
+      archive.appendChild(note);
     }
-
-    if (item.text) info.appendChild(createElement('p', 'life-entry-text', item.text));
 
     if (item.photos.length) {
       const photoGrid = createElement('div', 'life-photo-grid');
       photoGrid.dataset.count = String(item.photos.length);
       item.photos.forEach((photo, index) => photoGrid.appendChild(createPhoto(photo, item.photos, index)));
-      photos.appendChild(photoGrid);
+      archive.appendChild(photoGrid);
     } else {
-      layout.classList.add('has-no-photos');
+      archive.appendChild(createElement('p', 'life-empty', '这个月的照片正在整理中。'));
     }
 
-    layout.append(info, photos);
-    article.appendChild(layout);
-    return article;
+    return archive;
   };
 
-  const normalizedEntries = entries
-    .map(entry => ({
-      ...entry,
-      date: parseDate(entry.date),
-      photos: Array.isArray(entry.photos) ? entry.photos.filter(photo => photo && photo.src) : []
+  const normalizedMonths = monthRecords
+    .map(record => ({
+      ...record,
+      monthData: parseMonth(record.month),
+      photos: Array.isArray(record.photos) ? record.photos.filter(photo => photo && photo.src) : []
     }))
-    .filter(entry => entry.date)
-    .sort((a, b) => b.date.key.localeCompare(a.date.key));
+    .filter(record => record.monthData)
+    .sort((a, b) => b.monthData.key.localeCompare(a.monthData.key));
 
-  if (!normalizedEntries.length) {
+  if (!normalizedMonths.length) {
     logRoot.appendChild(createElement('p', 'life-empty', '生活影像正在整理中。'));
   } else {
     const years = new Map();
-    normalizedEntries.forEach(entry => {
-      if (!years.has(entry.date.year)) years.set(entry.date.year, new Map());
-      const months = years.get(entry.date.year);
-      if (!months.has(entry.date.month)) months.set(entry.date.month, []);
-      months.get(entry.date.month).push(entry);
+    normalizedMonths.forEach(record => {
+      if (!years.has(record.monthData.year)) years.set(record.monthData.year, []);
+      years.get(record.monthData.year).push(record);
     });
 
     years.forEach((months, year) => {
@@ -183,14 +175,15 @@
       const yearCollapsible = createCollapsible('life-year-content');
       yearCollapsible.content.id = yearContentId;
 
-      months.forEach((monthEntries, month) => {
+      months.forEach(monthRecord => {
+        const month = monthRecord.monthData.month;
         const monthSection = createElement('section', 'life-month-group');
-        const monthLabel = monthEntries[0].date.monthName;
+        const monthLabel = monthRecord.monthData.monthName;
         const monthContentId = `life-month-content-${year}-${month}`;
-        const monthDisclosure = createDisclosure('month', monthLabel, monthContentId);
+        const monthDisclosure = createDisclosure('month', monthLabel, monthContentId, monthRecord.photos.length);
         const monthCollapsible = createCollapsible('life-month-content');
         monthCollapsible.content.id = monthContentId;
-        monthEntries.forEach(entry => monthCollapsible.inner.appendChild(createEntry(entry)));
+        monthCollapsible.inner.appendChild(createMonthArchive(monthRecord));
         monthSection.append(monthDisclosure.heading, monthCollapsible.content);
         connectDisclosure(monthDisclosure.button, monthCollapsible.content, monthSection, monthLabel);
         yearCollapsible.inner.appendChild(monthSection);
