@@ -36,6 +36,13 @@
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
+
+  <url>
+    <loc>https://zzzzzzzzzzmj.github.io/zmj.github.io/life/</loc>
+    <lastmod>2026-09-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
   
   <url>
     <loc>https://zzzzzzzzzzmj.github.io/zmj.github.io/2023/11/25/4%E4%B8%AA%E9%B2%9C%E4%B8%BA%E4%BA%BA%E7%9F%A5%E7%9A%84GitHub%E7%A5%9E%E6%8A%80%E5%B7%A7/</loc>
