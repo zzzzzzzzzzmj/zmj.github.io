@@ -6,10 +6,15 @@
 images/life/
 └── 2026/
     ├── 09/
-    │   ├── 0917-01.jpg
-    │   └── 0912-01.jpg
-    └── 08/
-        └── 0826-01.jpg
+    │   ├── 0914-01.jpg
+    │   └── thumbs/
+    │       └── 0914-01.jpg
+    └── 07/
+        ├── 0702-01.jpg
+        └── thumbs/
+            └── 0702-01.jpg
 ```
 
-生活记录统一维护在 `js/life-data.js`。`src` 用于灯箱原图；如需缩略图，可额外提供 `thumb`，列表会优先加载缩略图。图片应继续使用 `loading="lazy"` 与 `decoding="async"`，这些属性已由渲染脚本自动添加。
+网页文件统一使用 `MMDD-序号.jpg` 命名，缩略图放在同月的 `thumbs` 目录。HEIC 原片保留在本地作为源文件，并由 `.gitignore` 排除，不会部署到 GitHub Pages。
+
+生活记录统一维护在 `js/life-data.js`。`src` 用于灯箱原图，`thumb` 用于列表缩略图。图片会自动使用 `loading="lazy"` 与 `decoding="async"`。
